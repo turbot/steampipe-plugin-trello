@@ -92,16 +92,6 @@ func getBoardColumns() []*plugin.Column {
 			Type:        proto.ColumnType_JSON,
 		},
 		{
-			Name:        "lists",
-			Description: "The lists of the board.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
-			Name:        "organization",
-			Description: "The organization that the board belongs to.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
 			Name:        "prefs",
 			Description: "The preferences of the board.",
 			Type:        proto.ColumnType_JSON,
@@ -131,13 +121,15 @@ func listMyBoards(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 
 	args := trello.Arguments{}
 
-	board, err := client.GetMyBoards(args)
+	boards, err := client.GetMyBoards(args)
 	if err != nil {
 		logger.Error("trello_my_board.listMyBoards", "api_error", err)
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, board)
+	for _, board := range boards {
+		d.StreamListItem(ctx, board)
+	}
 
 	return nil, nil
 }

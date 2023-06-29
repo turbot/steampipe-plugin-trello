@@ -97,13 +97,15 @@ func listMyNotifications(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 
 	args := trello.Arguments{}
 
-	notification, err := client.GetMyNotifications(args)
+	notifications, err := client.GetMyNotifications(args)
 	if err != nil {
 		logger.Error("trello_my_notification.listMyNotifications", "api_error", err)
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, notification)
+	for _, notification := range notifications {
+		d.StreamListItem(ctx, notification)
+	}
 
 	return nil, nil
 }

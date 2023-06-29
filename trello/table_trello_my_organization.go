@@ -16,8 +16,7 @@ func tableTrelloMyOrganization(_ context.Context) *plugin.Table {
 		Name:        "trello_my_organization",
 		Description: "Get details of my organizations.",
 		List: &plugin.ListConfig{
-			KeyColumns: plugin.SingleColumn("member_id"),
-			Hydrate:    listMyOrganizations,
+			Hydrate: listMyOrganizations,
 		},
 		Columns: getOrganizationColumns(),
 	}
@@ -100,7 +99,7 @@ func listMyOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	}
 
 	args := trello.Arguments{}
-	var organizations *[]trello.Organization
+	var organizations []trello.Organization
 
 	error := client.Get("members/me/organizations", args, &organizations)
 	if error != nil {
@@ -108,7 +107,7 @@ func listMyOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 		return nil, err
 	}
 
-	for _, organization := range *organizations {
+	for _, organization := range organizations {
 		d.StreamListItem(ctx, organization)
 	}
 

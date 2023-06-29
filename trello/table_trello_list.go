@@ -2,6 +2,7 @@ package trello
 
 import (
 	"context"
+	"path"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -16,9 +17,13 @@ func tableTrelloList(_ context.Context) *plugin.Table {
 		Name:        "trello_list",
 		Description: "Get details of a list.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id"}),
+			KeyColumns:        plugin.AnyColumn([]string{"id_board"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			Hydrate:           listLists,
+		},
+		Get: &plugin.GetConfig{
+			KeyColumns: plugin.SingleColumn("id"),
+			Hydrate:    getList,
 		},
 		Columns: getListColumns(),
 	}
@@ -45,6 +50,7 @@ func getListColumns() []*plugin.Column {
 		{
 			Name:        "id_board",
 			Description: "The id of the board the list belongs to.",
+			Transform:   transform.FromField("IDBoard"),
 			Type:        proto.ColumnType_STRING,
 		},
 		{
@@ -85,6 +91,40 @@ func getListColumns() []*plugin.Column {
 func listLists(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
+	boardId := d.EqualsQualString("id_board")
+
+	// Return nil if the id is empty
+	if boardId == "" {
+		return nil, nil
+	}
+
+	// Create client
+	client, err := connectTrello(ctx, d)
+	if err != nil {
+		logger.Error("trello_list.listLists", "connection_error", err)
+		return nil, err
+	}
+
+	args := trello.Arguments{}
+	var lists []trello.List
+
+	path := path.Join("boards", boardId, "lists")
+	error := client.Get(path, args, &lists)
+	if error != nil {
+		logger.Error("trello_list.listLists", "api_error", error)
+		return nil, error
+	}
+
+	for _, list := range lists {
+		d.StreamListItem(ctx, list)
+	}
+
+	return nil, nil
+}
+
+func getList(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	id := d.EqualsQualString("id")
 
 	// Return nil if the id is empty
@@ -107,7 +147,5 @@ func listLists(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, list)
-
-	return nil, nil
+	return list, nil
 }

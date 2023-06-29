@@ -246,7 +246,7 @@ func listCards(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	}
 
 	args := trello.Arguments{}
-	var cards []*trello.Card
+	var cards []trello.Card
 
 	path := fmt.Sprintf("lists/%s/cards", listId)
 	error := client.Get(path, args, &cards)

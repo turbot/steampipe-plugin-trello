@@ -31,7 +31,7 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 
 func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	id := h.Item.(*trello.Organization).ID
+	id := h.Item.(trello.Organization).ID
 
 	if d.EqualsQuals["id_organization"] != nil && d.EqualsQualString("id_organization") != id {
 		return nil, nil

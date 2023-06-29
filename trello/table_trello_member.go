@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	"github.com/adlio/trello"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -15,16 +17,75 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 		Name:        "trello_member",
 		Description: "Get details of a member.",
 		List: &plugin.ListConfig{
-			// KeyColumns:        plugin.OptionalColumns([]string{"id_organizations"}),
-			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			ParentHydrate:     listMyOrganizations,
 			Hydrate:           listMembers,
+			ShouldIgnoreError: isNotFoundError([]string{"404"}),
+			// KeyColumns:        plugin.OptionalColumns([]string{"id_organizations"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"id", "username"}),
 			Hydrate:    getMember,
 		},
-		Columns: getMemberColumns(),
+		Columns: []*plugin.Column{
+			{
+				Name:        "id",
+				Description: "The id of the member.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
+			},
+			{
+				Name:        "username",
+				Description: "The username of the member.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "avatar_hash",
+				Description: "The hash of the avatar of the member.",
+				Hydrate:     getMember,
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "email",
+				Description: "The email address of the member.",
+				Hydrate:     getMember,
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "full_name",
+				Description: "The full name of the member.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "initials",
+				Description: "The initials of the member.",
+				Hydrate:     getMember,
+				Type:        proto.ColumnType_STRING,
+			},
+
+			// JSON fields
+			{
+				Name:        "id_boards",
+				Description: "An array of board IDs that the member is on.",
+				Hydrate:     getMember,
+				Transform:   transform.FromField("IDBoards"),
+				Type:        proto.ColumnType_JSON,
+			},
+			{
+				Name:        "id_organizations",
+				Description: "An array of organization IDs that the member belongs to.",
+				Hydrate:     getMember,
+				Transform:   transform.FromField("IDOrganizations"),
+				Type:        proto.ColumnType_JSON,
+			},
+
+			// Standard Steampipe columns
+			{
+				Name:        "title",
+				Description: "The title of the member.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("FullName"),
+			},
+		},
 	}
 }
 
@@ -32,7 +93,9 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 
 func listMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	organizationId := h.Item.(*trello.Organization).ID
+
+	data := h.Item.(trello.Organization)
+	organizationId := data.ID
 
 	// Create client
 	client, err := connectTrello(ctx, d)
@@ -42,10 +105,10 @@ func listMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	}
 
 	args := trello.Arguments{}
-	var members []*trello.Member
+	var members []trello.Member
 
 	path := fmt.Sprintf("organizations/%s/members", organizationId)
-	error := client.Get(path, args, members)
+	error := client.Get(path, args, &members)
 	if error != nil {
 		logger.Error("trello_member.listMembers", "api_error", error)
 		return nil, error
@@ -58,17 +121,22 @@ func listMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	return nil, nil
 }
 
-func getMember(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getMember(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	id := d.EqualsQualString("id")
-	if id == "" {
-		id = d.EqualsQualString("username")
-	}
+	var id string
+	if h.Item != nil {
+		id = h.Item.(trello.Member).ID
+	} else {
+		id = d.EqualsQualString("id")
+		if id == "" {
+			id = d.EqualsQualString("username")
+		}
 
-	// Return if the id is empty
-	if id == "" {
-		return nil, nil
+		// Return if the id is empty
+		if id == "" {
+			return nil, nil
+		}
 	}
 
 	// Create client
@@ -86,7 +154,5 @@ func getMember(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, member)
-
-	return nil, nil
+	return member, nil
 }

@@ -251,7 +251,7 @@ func listCards(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	path := fmt.Sprintf("lists/%s/cards", listId)
 	error := client.Get(path, args, &cards)
 	if error != nil {
-		logger.Error("trello_card.listCards", "api_error", err)
+		logger.Error("trello_card.listCards", "api_error", error)
 		return nil, error
 	}
 

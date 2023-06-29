@@ -2,6 +2,7 @@ package trello
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -14,8 +15,9 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 		Name:        "trello_member",
 		Description: "Get details of a member.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"email", "full_name"}),
+			// KeyColumns:        plugin.OptionalColumns([]string{"id_organizations"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
+			ParentHydrate:     listMyOrganizations,
 			Hydrate:           listMembers,
 		},
 		Get: &plugin.GetConfig{
@@ -28,25 +30,9 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listMembers(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-
-	var email, fullName string
-	email = d.EqualsQualString("email")
-	fullName = d.EqualsQualString("full_name")
-	var query string
-
-	if email != "" {
-		query += "email:" + email + " "
-	}
-	if fullName != "" {
-		query += "fullName:" + fullName
-	}
-
-	// Return nil if the query is empty
-	if query == "" {
-		return nil, nil
-	}
+	organizationId := h.Item.(*trello.Organization).ID
 
 	// Create client
 	client, err := connectTrello(ctx, d)
@@ -56,11 +42,13 @@ func listMembers(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	}
 
 	args := trello.Arguments{}
+	var members []*trello.Member
 
-	members, err := client.SearchMembers(query, args)
-	if err != nil {
-		logger.Error("trello_member.listMembers", "api_error", err)
-		return nil, err
+	path := fmt.Sprintf("organizations/%s/members", organizationId)
+	error := client.Get(path, args, members)
+	if error != nil {
+		logger.Error("trello_member.listMembers", "api_error", error)
+		return nil, error
 	}
 
 	for _, member := range members {

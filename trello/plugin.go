@@ -24,6 +24,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		TableMap: map[string]*plugin.Table{
 			"trello_board":           tableTrelloBoard(ctx),
 			"trello_card":            tableTrelloCard(ctx),
+			"trrello_list":           tableTrelloList(ctx),
 			"trello_member":          tableTrelloMember(ctx),
 			"trello_my_board":        tableTrelloMyBoard(ctx),
 			"trello_my_member":       tableTrelloMyMember(ctx),

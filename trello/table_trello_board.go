@@ -14,10 +14,14 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 		Name:        "trello_board",
 		Description: "Get details of a board.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.OptionalColumns([]string{"id"}),
+			KeyColumns:        plugin.OptionalColumns([]string{"id_organization"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			ParentHydrate:     listMyOrganizations,
 			Hydrate:           listBoards,
+		},
+		Get: &plugin.GetConfig{
+			KeyColumns: plugin.SingleColumn("id"),
+			Hydrate:    getBoard,
 		},
 		Columns: getBoardColumns(),
 	}

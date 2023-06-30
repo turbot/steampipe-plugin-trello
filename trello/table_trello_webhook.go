@@ -20,48 +20,44 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			Hydrate:           listWebhooks,
 		},
-		Columns: getWebhookColumns(),
-	}
-}
+		Columns: []*plugin.Column{
+			{
+				Name:        "id",
+				Description: "The id of the webhook.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
+			},
+			{
+				Name:        "active",
+				Description: "Whether the webhook is active.",
+				Type:        proto.ColumnType_BOOL,
+			},
+			{
+				Name:        "callback_url",
+				Description: "The callback url of the webhook.",
+				Transform:   transform.FromField("CallbackURL"),
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "description",
+				Description: "The description of the webhook.",
+				Transform:   transform.FromField("Desc"),
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "id_model",
+				Description: "The id of the model of the webhook.",
+				Transform:   transform.FromField("IDModel"),
+				Type:        proto.ColumnType_STRING,
+			},
 
-func getWebhookColumns() []*plugin.Column {
-	return []*plugin.Column{
-		{
-			Name:        "id",
-			Description: "The id of the webhook.",
-			Type:        proto.ColumnType_STRING,
-			Transform:   transform.FromField("ID"),
-		},
-		{
-			Name:        "active",
-			Description: "Whether the webhook is active.",
-			Type:        proto.ColumnType_BOOL,
-		},
-		{
-			Name:        "callback_url",
-			Description: "The callback url of the webhook.",
-			Transform:   transform.FromField("CallbackURL"),
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "description",
-			Description: "The description of the webhook.",
-			Transform:   transform.FromField("Desc"),
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "id_model",
-			Description: "The id of the model of the webhook.",
-			Transform:   transform.FromField("IDModel"),
-			Type:        proto.ColumnType_STRING,
-		},
-
-		// Standard Steampipe columns
-		{
-			Name:        "title",
-			Description: "The title of the webhook.",
-			Type:        proto.ColumnType_STRING,
-			Transform:   transform.FromField("ID"),
+			// Standard Steampipe columns
+			{
+				Name:        "title",
+				Description: "The title of the webhook.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
+			},
 		},
 	}
 }

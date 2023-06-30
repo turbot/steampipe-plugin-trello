@@ -18,67 +18,63 @@ func tableTrelloMyNotification(_ context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listMyNotifications,
 		},
-		Columns: getNotificationColumns(),
-	}
-}
+		Columns: []*plugin.Column{
+			{
+				Name:        "id",
+				Description: "The id of the notification.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
+			},
+			{
+				Name:        "date",
+				Description: "The date of the notification.",
+				Type:        proto.ColumnType_TIMESTAMP,
+			},
+			{
+				Name:        "date_read",
+				Description: "The date of the notification read.",
+				Type:        proto.ColumnType_TIMESTAMP,
+			},
+			{
+				Name:        "id_member_creator",
+				Description: "The id of the member who created the notification.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "id_action",
+				Description: "The id of the action of the notification.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "type",
+				Description: "The type of the notification.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "unread",
+				Description: "Whether the notification is unread.",
+				Type:        proto.ColumnType_BOOL,
+			},
 
-func getNotificationColumns() []*plugin.Column {
-	return []*plugin.Column{
-		{
-			Name:        "id",
-			Description: "The id of the notification.",
-			Type:        proto.ColumnType_STRING,
-			Transform:   transform.FromField("ID"),
-		},
-		{
-			Name:        "date",
-			Description: "The date of the notification.",
-			Type:        proto.ColumnType_TIMESTAMP,
-		},
-		{
-			Name:        "date_read",
-			Description: "The date of the notification read.",
-			Type:        proto.ColumnType_TIMESTAMP,
-		},
-		{
-			Name:        "id_member_creator",
-			Description: "The id of the member who created the notification.",
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "id_action",
-			Description: "The id of the action of the notification.",
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "type",
-			Description: "The type of the notification.",
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "unread",
-			Description: "Whether the notification is unread.",
-			Type:        proto.ColumnType_BOOL,
-		},
+			// JSON fields
+			{
+				Name:        "data",
+				Description: "The data of the notification.",
+				Type:        proto.ColumnType_JSON,
+			},
+			{
+				Name:        "member_creator",
+				Description: "The member who created the notification.",
+				Type:        proto.ColumnType_JSON,
+			},
 
-		// JSON fields
-		{
-			Name:        "data",
-			Description: "The data of the notification.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
-			Name:        "member_creator",
-			Description: "The member who created the notification.",
-			Type:        proto.ColumnType_JSON,
-		},
-
-		// Standard Steampipe columns
-		{
-			Name:        "title",
-			Description: "The title of the notification.",
-			Type:        proto.ColumnType_STRING,
-			Transform:   transform.FromField("Name"),
+			// Standard Steampipe columns
+			{
+				Name:        "title",
+				Description: "The title of the notification.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("Name"),
+			},
 		},
 	}
 }

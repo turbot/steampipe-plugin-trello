@@ -2,7 +2,7 @@ package trello
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -12,18 +12,14 @@ import (
 
 //// TABLE DEFINITION
 
-func tableTrelloCard(_ context.Context) *plugin.Table {
+func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "trello_card",
+		Name:        "trello_search_card",
 		Description: "Get details of a card.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id_list"}),
+			KeyColumns:        plugin.SingleColumn("query"),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
-			Hydrate:           listCards,
-		},
-		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getCard,
+			Hydrate:           searchCards,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -35,6 +31,12 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "name",
 				Description: "The full name of the card.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "query",
+				Description: "The query provided for the search.",
+				Transform:   transform.FromQual("query"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -50,12 +52,14 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "description",
 				Description: "The description of the card.",
+				Hydrate:     getCard,
 				Transform:   transform.FromField("Desc"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "due",
 				Description: "The estimated due time of the card.",
+				Hydrate:     getCard,
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -66,11 +70,13 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "email",
 				Description: "The email id associated with the card.",
+				Hydrate:     getCard,
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "id_attachment_cover",
 				Description: "The id of the attachment cover of the card.",
+				Hydrate:     getCard,
 				Transform:   transform.FromField("IDAttachmentCover"),
 				Type:        proto.ColumnType_STRING,
 			},
@@ -116,6 +122,7 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "start",
 				Description: "The start time of the card.",
+				Hydrate:     getCard,
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -132,11 +139,6 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 
 			// JSON fields
 			{
-				Name:        "actions",
-				Description: "The actions of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
 				Name:        "attachments",
 				Description: "The attachments of the card.",
 				Type:        proto.ColumnType_JSON,
@@ -144,21 +146,12 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "badges",
 				Description: "The badges of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "board",
-				Description: "The board of the card.",
+				Hydrate:     getCard,
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "check_item_states",
 				Description: "The check item states of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "checklists",
-				Description: "The checklists of the card.",
 				Type:        proto.ColumnType_JSON,
 			},
 			{
@@ -174,6 +167,7 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "id_check_lists",
 				Description: "The check list ids of the card.",
+				Hydrate:     getCard,
 				Transform:   transform.FromField("IDCheckLists"),
 				Type:        proto.ColumnType_JSON,
 			},
@@ -191,23 +185,15 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "id_members",
 				Description: "The member ids of the card.",
+				Hydrate:     getCard,
 				Transform:   transform.FromField("IDMembers"),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "id_members_voted",
 				Description: "The member voted ids of the card.",
+				Hydrate:     getCard,
 				Transform:   transform.FromField("IDMembersVoted"),
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "list",
-				Description: "The list of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "members",
-				Description: "The members of the card.",
 				Type:        proto.ColumnType_JSON,
 			},
 
@@ -224,69 +210,59 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listCards(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func searchCards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	listId := d.EqualsQualString("id_list")
+	query := d.EqualsQualString("query")
 
-	// Return nil if the id is empty
-	if listId == "" {
+	// Return nil if query is empty
+	if query == "" {
 		return nil, nil
+	}
+
+	// Limiting the results
+	maxLimit := int32(1000)
+	if d.QueryContext.Limit != nil {
+		limit := int32(*d.QueryContext.Limit)
+		if limit < maxLimit {
+			maxLimit = limit
+		}
 	}
 
 	// Create client
 	client, err := connectTrello(ctx, d)
 	if err != nil {
-		logger.Error("trello_card.listCards", "connection_error", err)
+		logger.Error("trello_search_card.searchCards", "connection_error", err)
 		return nil, err
 	}
 
-	args := trello.Arguments{}
-	var cards []trello.Card
-
-	path := fmt.Sprintf("lists/%s/cards", listId)
-	error := client.Get(path, args, &cards)
-	if error != nil {
-		logger.Error("trello_card.listCards", "api_error", error)
-		return nil, error
+	args := trello.Arguments{
+		"cards_limit": strconv.Itoa(int(maxLimit)),
+		"cards_page":  "0",
 	}
 
-	for _, card := range cards {
-		d.StreamListItem(ctx, card)
+	for {
+		cards, err := client.SearchCards(query, args)
+		if err != nil {
+			logger.Error("trello_search_card.searchCards", "api_error", err)
+			return nil, err
+		}
+
+		for _, card := range cards {
+			d.StreamListItem(ctx, card)
+		}
+
+		// Context can be cancelled due to manual cancellation or the limit has been hit
+		if d.RowsRemaining(ctx) == 0 {
+			return nil, nil
+		}
+
+		if len(cards) < int(maxLimit) {
+			return nil, nil
+		} else {
+			page, _ := strconv.Atoi(args["cards_page"])
+			nextPage := page + 1
+			args["cards_page"] = strconv.Itoa(int(nextPage))
+		}
 	}
-
-	return nil, nil
-}
-
-func getCard(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	logger := plugin.Logger(ctx)
-
-	var id string
-	if h.Item != nil {
-		id = h.Item.(*trello.Card).ID
-	} else {
-		id = d.EqualsQualString("id")
-	}
-
-	// Return nil if the id is empty
-	if id == "" {
-		return nil, nil
-	}
-
-	// Create client
-	client, err := connectTrello(ctx, d)
-	if err != nil {
-		logger.Error("trello_card.listCards", "connection_error", err)
-		return nil, err
-	}
-
-	args := trello.Arguments{}
-
-	card, error := client.GetCard(id, args)
-	if error != nil {
-		logger.Error("trello_card.listCards", "api_error", err)
-		return nil, error
-	}
-
-	return card, nil
 }

@@ -2,6 +2,7 @@ package trello
 
 import (
 	"context"
+	"strings"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -14,7 +15,7 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 		Name:        "trello_board",
 		Description: "Get details of a board.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.OptionalColumns([]string{"id_organization"}),
+			KeyColumns:        plugin.OptionalColumns([]string{"id_organization", "closed"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			ParentHydrate:     listMyOrganizations,
 			Hydrate:           listBoards,
@@ -32,9 +33,17 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := h.Item.(trello.Organization).ID
+	var filter []string // "all" is the default
 
 	if d.EqualsQuals["id_organization"] != nil && d.EqualsQualString("id_organization") != id {
 		return nil, nil
+	}
+	if d.EqualsQuals["closed"] != nil {
+		if d.EqualsQuals["closed"].GetBoolValue() {
+			filter = append(filter, "closed")
+		} else {
+			filter = append(filter, "open")
+		}
 	}
 
 	// Create client
@@ -44,7 +53,9 @@ func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 		return nil, err
 	}
 
-	args := trello.Arguments{}
+	args := trello.Arguments{
+		"filter": strings.Join(filter, ","),
+	}
 
 	boards, err := client.GetBoardsInOrganization(id, args)
 	if err != nil {

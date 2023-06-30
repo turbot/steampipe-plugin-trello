@@ -25,63 +25,47 @@ func tableTrelloList(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("id"),
 			Hydrate:    getList,
 		},
-		Columns: getListColumns(),
-	}
-}
+		Columns: []*plugin.Column{
+			{
+				Name:        "id",
+				Description: "The id of the list.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
+			},
+			{
+				Name:        "name",
+				Description: "The full name of the list.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "closed",
+				Description: "Whether the list is closed.",
+				Type:        proto.ColumnType_BOOL,
+			},
+			{
+				Name:        "id_board",
+				Description: "The id of the board the list belongs to.",
+				Transform:   transform.FromField("IDBoard"),
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "pos",
+				Description: "The position of the list.",
+				Type:        proto.ColumnType_DOUBLE,
+			},
+			{
+				Name:        "subscribed",
+				Description: "Whether the list has been subscribed.",
+				Type:        proto.ColumnType_BOOL,
+			},
 
-func getListColumns() []*plugin.Column {
-	return []*plugin.Column{
-		{
-			Name:        "id",
-			Description: "The id of the list.",
-			Type:        proto.ColumnType_STRING,
-			Transform:   transform.FromField("ID"),
-		},
-		{
-			Name:        "name",
-			Description: "The full name of the list.",
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "closed",
-			Description: "Whether the list is closed.",
-			Type:        proto.ColumnType_BOOL,
-		},
-		{
-			Name:        "id_board",
-			Description: "The id of the board the list belongs to.",
-			Transform:   transform.FromField("IDBoard"),
-			Type:        proto.ColumnType_STRING,
-		},
-		{
-			Name:        "pos",
-			Description: "The position of the list.",
-			Type:        proto.ColumnType_DOUBLE,
-		},
-		{
-			Name:        "subscribed",
-			Description: "Whether the list has been subscribed.",
-			Type:        proto.ColumnType_BOOL,
-		},
-
-		// JSON fields
-		{
-			Name:        "board",
-			Description: "The board the list belongs to.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
-			Name:        "cards",
-			Description: "The cards in the list.",
-			Type:        proto.ColumnType_JSON,
-		},
-
-		// Standard Steampipe columns
-		{
-			Name:        "title",
-			Description: "The title of the list.",
-			Type:        proto.ColumnType_STRING,
-			Transform:   transform.FromField("Name"),
+			// Standard Steampipe columns
+			{
+				Name:        "title",
+				Description: "The title of the list.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("Name"),
+			},
 		},
 	}
 }

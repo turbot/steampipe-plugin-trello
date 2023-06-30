@@ -82,11 +82,6 @@ func getBoardColumns() []*plugin.Column {
 
 		// JSON fields
 		{
-			Name:        "actions",
-			Description: "The actions of the board.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
 			Name:        "label_names",
 			Description: "The label names of the board.",
 			Type:        proto.ColumnType_JSON,

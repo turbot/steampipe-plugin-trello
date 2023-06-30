@@ -2,6 +2,7 @@ package trello
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -75,6 +76,13 @@ func getOrganizationColumns() []*plugin.Column {
 			Description: "The power ups that are a part of the organization.",
 			Type:        proto.ColumnType_JSON,
 		},
+		{
+			Name:        "tags",
+			Description: "The organization tags.",
+			Hydrate:     getOrganizationTags,
+			Transform:   transform.FromValue(),
+			Type:        proto.ColumnType_JSON,
+		},
 
 		// Standard Steampipe columns
 		{
@@ -112,4 +120,34 @@ func listMyOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	}
 
 	return nil, nil
+}
+
+//// HYDRATE FUNCTIONS
+
+func getOrganizationTags(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := h.Item.(trello.Organization).ID
+
+	// Create client
+	client, err := connectTrello(ctx, d)
+	if err != nil {
+		logger.Error("trello_my_organization.getOrganizationTags", "connection_error", err)
+		return nil, err
+	}
+
+	args := trello.Arguments{}
+	var tags []Tag
+
+	error := client.Get(fmt.Sprintf("organizations/%s/tags", id), args, tags)
+	if error != nil {
+		logger.Error("trello_my_organization.getOrganizationTags", "api_error", err)
+		return nil, err
+	}
+
+	return tags, nil
+}
+
+type Tag struct {
+	id   string `json:"id"`
+	name string `json:"name"`
 }

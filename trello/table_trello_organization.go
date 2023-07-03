@@ -49,7 +49,7 @@ func listOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, &organization)
+	d.StreamListItem(ctx, *organization)
 
 	return nil, nil
 }

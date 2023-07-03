@@ -5,3 +5,15 @@ An organization is a higher-level entity that helps users manage multiple boards
 ## Examples
 
 ### Basic info
+
+```sql
+select
+  id,
+  name,
+  description,
+  display_name,
+  url,
+  website
+from 
+  trello_my_organization;
+```

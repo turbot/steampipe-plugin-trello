@@ -15,12 +15,11 @@ import (
 func tableTrelloMember(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_member",
-		Description: "Get details of a member.",
+		Description: "Get details of all members in an organization.",
 		List: &plugin.ListConfig{
 			ParentHydrate:     listMyOrganizations,
 			Hydrate:           listMembers,
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
-			// KeyColumns:        plugin.OptionalColumns([]string{"id_organizations"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"id", "username"}),
@@ -29,7 +28,7 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the member.",
+				Description: "The unique identifier of the member.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},

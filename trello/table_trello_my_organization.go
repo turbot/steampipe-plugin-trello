@@ -48,12 +48,6 @@ func getOrganizationColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 		},
 		{
-			Name:        "member_id",
-			Description: "The id of the member.",
-			Transform:   transform.FromQual("member_id"),
-			Type:        proto.ColumnType_STRING,
-		},
-		{
 			Name:        "url",
 			Description: "The URL of the organization.",
 			Transform:   transform.FromField("URL"),

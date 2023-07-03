@@ -2,7 +2,7 @@ package trello
 
 import (
 	"context"
-	"fmt"
+	"path"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -107,7 +107,7 @@ func listMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	args := trello.Arguments{}
 	var members []trello.Member
 
-	path := fmt.Sprintf("organizations/%s/members", organizationId)
+	path := path.Join("organizations", organizationId, "members")
 	error := client.Get(path, args, &members)
 	if error != nil {
 		logger.Error("trello_member.listMembers", "api_error", error)

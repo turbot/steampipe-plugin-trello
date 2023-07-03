@@ -124,7 +124,7 @@ func searchOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 
 	var organizations []trello.Organization
 
-	error := client.Get("search", args, organizations)
+	error := client.Get("search", args, &organizations)
 	if error != nil {
 		logger.Error("trello_search_organization.searchOrganizations", "api_error", error)
 		return nil, err

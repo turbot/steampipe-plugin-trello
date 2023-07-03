@@ -24,13 +24,13 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the card.",
+				Description: "The unique identifier for the card.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
-				Description: "The full name of the card.",
+				Description: "The name of the card.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -41,30 +41,30 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "closed",
-				Description: "Whether the card is closed.",
+				Description: "Indicates whether the card is closed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "date_last_activity",
-				Description: "The date of the last activity on the card.",
+				Description: "The timestamp of the last activity on the card.",
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "description",
-				Description: "The description of the card.",
+				Description: "The description or summary of the card.",
 				Hydrate:     getCard,
 				Transform:   transform.FromField("Desc"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "due",
-				Description: "The estimated due time of the card.",
+				Description: "The due date of the card, if set.",
 				Hydrate:     getCard,
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "due_complete",
-				Description: "Whether the task is complete.",
+				Description: "Indicates whether the due date of the card is complete.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
@@ -75,20 +75,20 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "id_attachment_cover",
-				Description: "The id of the attachment cover of the card.",
+				Description: "The id of the attachment used as the card cover.",
 				Hydrate:     getCard,
 				Transform:   transform.FromField("IDAttachmentCover"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "id_board",
-				Description: "The id of the board.",
+				Description: "The id of the board the card belongs to.",
 				Transform:   transform.FromField("IDShort"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "id_list",
-				Description: "The id of the list.",
+				Description: "The id of the list the card belongs to.",
 				Transform:   transform.FromField("IDList"),
 				Type:        proto.ColumnType_STRING,
 			},
@@ -110,12 +110,12 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "short_link",
-				Description: "The short link of the card.",
+				Description: "The shortened link of the card.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "short_url",
-				Description: "The short URL of the card.",
+				Description: "The shortened URL of the card.",
 				Transform:   transform.FromField("ShortURL"),
 				Type:        proto.ColumnType_STRING,
 			},
@@ -127,7 +127,7 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "subscribed",
-				Description: "Whether the card has been subscribed.",
+				Description: "Indicates whether the card has been subscribed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
@@ -141,6 +141,8 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "attachments",
 				Description: "The attachments of the card.",
+				Hydrate:     getCardAttachments,
+				Transform:   transform.FromValue(),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
@@ -155,8 +157,17 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 			},
 			{
+				Name:        "checklists",
+				Description: "The checklists of the card.",
+				Hydrate:     getCardChecklists,
+				Transform:   transform.FromValue(),
+				Type:        proto.ColumnType_JSON,
+			},
+			{
 				Name:        "custom_field_items",
 				Description: "The custom field items of the card.",
+				Hydrate:     getCardCustomFieldItems,
+				Transform:   transform.FromValue(),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
@@ -166,14 +177,14 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "id_check_lists",
-				Description: "The check list ids of the card.",
+				Description: "The ids of checklists attached to the card.",
 				Hydrate:     getCard,
 				Transform:   transform.FromField("IDCheckLists"),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "id_labels",
-				Description: "The label ids of the card.",
+				Description: "The ids of labels attached to the card.",
 				Transform:   transform.FromField("IDLabels"),
 				Type:        proto.ColumnType_JSON,
 			},
@@ -184,14 +195,14 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "id_members",
-				Description: "The member ids of the card.",
+				Description: "The ids of members attached to the card.",
 				Hydrate:     getCard,
 				Transform:   transform.FromField("IDMembers"),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "id_members_voted",
-				Description: "The member voted ids of the card.",
+				Description: "The ids of members who voted on the card.",
 				Hydrate:     getCard,
 				Transform:   transform.FromField("IDMembersVoted"),
 				Type:        proto.ColumnType_JSON,
@@ -249,7 +260,7 @@ func searchCards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 		}
 
 		for _, card := range cards {
-			d.StreamListItem(ctx, card)
+			d.StreamListItem(ctx, *card)
 		}
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit

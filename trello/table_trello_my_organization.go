@@ -2,7 +2,7 @@ package trello
 
 import (
 	"context"
-	"fmt"
+	"path"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -109,7 +109,8 @@ func listMyOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	args := trello.Arguments{}
 	var organizations []trello.Organization
 
-	error := client.Get("members/me/organizations", args, &organizations)
+	path := "members/me/organizations"
+	error := client.Get(path, args, &organizations)
 	if error != nil {
 		logger.Error("trello_my_organization.listMyOrganizations", "api_error", err)
 		return nil, err
@@ -138,7 +139,8 @@ func getOrganizationTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	args := trello.Arguments{}
 	var tags []Tag
 
-	error := client.Get(fmt.Sprintf("organizations/%s/tags", id), args, tags)
+	path := path.Join("organizations", id, "tags")
+	error := client.Get(path, args, &tags)
 	if error != nil {
 		logger.Error("trello_my_organization.getOrganizationTags", "api_error", err)
 		return nil, err

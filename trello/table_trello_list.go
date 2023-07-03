@@ -28,18 +28,18 @@ func tableTrelloList(_ context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the list.",
+				Description: "The unique identifier for the list.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
-				Description: "The full name of the list.",
+				Description: "The name of the list.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "closed",
-				Description: "Whether the list is closed.",
+				Description: "Indicates whether the list is closed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
@@ -55,7 +55,7 @@ func tableTrelloList(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "subscribed",
-				Description: "Whether the list has been subscribed.",
+				Description: "Indicates whether the list has been subscribed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 

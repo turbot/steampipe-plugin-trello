@@ -2,7 +2,7 @@ package trello
 
 import (
 	"context"
-	"fmt"
+	"path"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -28,39 +28,39 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the card.",
+				Description: "The unique identifier for the card.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
-				Description: "The full name of the card.",
+				Description: "The name of the card.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "closed",
-				Description: "Whether the card is closed.",
+				Description: "Indicates whether the card is closed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "date_last_activity",
-				Description: "The date of the last activity on the card.",
+				Description: "The timestamp of the last activity on the card.",
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "description",
-				Description: "The description of the card.",
+				Description: "The description or summary of the card.",
 				Transform:   transform.FromField("Desc"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "due",
-				Description: "The estimated due time of the card.",
+				Description: "The due date of the card, if set.",
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "due_complete",
-				Description: "Whether the task is complete.",
+				Description: "Indicates whether the due date of the card is complete.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
@@ -70,19 +70,19 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "id_attachment_cover",
-				Description: "The id of the attachment cover of the card.",
+				Description: "The id of the attachment used as the card cover.",
 				Transform:   transform.FromField("IDAttachmentCover"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "id_board",
-				Description: "The id of the board.",
+				Description: "The id of the board the card belongs to.",
 				Transform:   transform.FromField("IDShort"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "id_list",
-				Description: "The id of the list.",
+				Description: "The id of the list the card belongs to.",
 				Transform:   transform.FromField("IDList"),
 				Type:        proto.ColumnType_STRING,
 			},
@@ -104,12 +104,12 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "short_link",
-				Description: "The short link of the card.",
+				Description: "The shortened link of the card.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "short_url",
-				Description: "The short URL of the card.",
+				Description: "The shortened URL of the card.",
 				Transform:   transform.FromField("ShortURL"),
 				Type:        proto.ColumnType_STRING,
 			},
@@ -120,7 +120,7 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "subscribed",
-				Description: "Whether the card has been subscribed.",
+				Description: "Indicates whether the card has been subscribed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
@@ -132,23 +132,15 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 
 			// JSON fields
 			{
-				Name:        "actions",
-				Description: "The actions of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
 				Name:        "attachments",
 				Description: "The attachments of the card.",
+				Hydrate:     getCardAttachments,
+				Transform:   transform.FromValue(),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "badges",
 				Description: "The badges of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "board",
-				Description: "The board of the card.",
 				Type:        proto.ColumnType_JSON,
 			},
 			{
@@ -159,11 +151,15 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			{
 				Name:        "checklists",
 				Description: "The checklists of the card.",
+				Hydrate:     getCardChecklists,
+				Transform:   transform.FromValue(),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "custom_field_items",
 				Description: "The custom field items of the card.",
+				Hydrate:     getCardCustomFieldItems,
+				Transform:   transform.FromValue(),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
@@ -173,13 +169,14 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "id_check_lists",
-				Description: "The check list ids of the card.",
+				Description: "The ids of checklists attached to the card.",
+				Hydrate:     getCard,
 				Transform:   transform.FromField("IDCheckLists"),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "id_labels",
-				Description: "The label ids of the card.",
+				Description: "The ids of labels attached to the card.",
 				Transform:   transform.FromField("IDLabels"),
 				Type:        proto.ColumnType_JSON,
 			},
@@ -190,24 +187,14 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "id_members",
-				Description: "The member ids of the card.",
+				Description: "The ids of members attached to the card.",
 				Transform:   transform.FromField("IDMembers"),
 				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "id_members_voted",
-				Description: "The member voted ids of the card.",
+				Description: "The ids of members who voted on the card.",
 				Transform:   transform.FromField("IDMembersVoted"),
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "list",
-				Description: "The list of the card.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "members",
-				Description: "The members of the card.",
 				Type:        proto.ColumnType_JSON,
 			},
 
@@ -244,7 +231,7 @@ func listCards(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	args := trello.Arguments{}
 	var cards []trello.Card
 
-	path := fmt.Sprintf("lists/%s/cards", listId)
+	path := path.Join("lists", listId, "cards")
 	error := client.Get(path, args, &cards)
 	if error != nil {
 		logger.Error("trello_card.listCards", "api_error", error)
@@ -263,7 +250,7 @@ func getCard(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (i
 
 	var id string
 	if h.Item != nil {
-		id = h.Item.(*trello.Card).ID
+		id = h.Item.(trello.Card).ID
 	} else {
 		id = d.EqualsQualString("id")
 	}
@@ -288,5 +275,80 @@ func getCard(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (i
 		return nil, error
 	}
 
-	return card, nil
+	return *card, nil
+}
+
+func getCardAttachments(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
+	id := h.Item.(trello.Card).ID
+
+	// Create client
+	client, err := connectTrello(ctx, d)
+	if err != nil {
+		logger.Error("trello_card.getCardAttachments", "connection_error", err)
+		return nil, err
+	}
+
+	args := trello.Arguments{}
+	var attachments []trello.Attachment
+
+	path := path.Join("cards", id, "attachments")
+	error := client.Get(path, args, &attachments)
+	if error != nil {
+		logger.Error("trello_card.getCardAttachments", "api_error", error)
+		return nil, error
+	}
+
+	return attachments, nil
+}
+
+func getCardChecklists(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
+	id := h.Item.(trello.Card).ID
+
+	// Create client
+	client, err := connectTrello(ctx, d)
+	if err != nil {
+		logger.Error("trello_board.getCardChecklists", "connection_error", err)
+		return nil, err
+	}
+
+	args := trello.Arguments{}
+	var checklists []trello.Checklist
+
+	path := path.Join("cards", id, "checklists")
+	error := client.Get(path, args, &checklists)
+	if error != nil {
+		logger.Error("trello_board.getCardChecklists", "api_error", error)
+		return nil, error
+	}
+
+	return checklists, nil
+}
+
+func getCardCustomFieldItems(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
+	id := h.Item.(trello.Card).ID
+
+	// Create client
+	client, err := connectTrello(ctx, d)
+	if err != nil {
+		logger.Error("trello_board.getCardCustomFieldItems", "connection_error", err)
+		return nil, err
+	}
+
+	args := trello.Arguments{}
+	var customFields []trello.CustomFieldItem
+
+	path := path.Join("cards", id, "customFieldItems")
+	error := client.Get(path, args, &customFields)
+	if error != nil {
+		logger.Error("trello_board.getCardCustomFieldItems", "api_error", error)
+		return nil, error
+	}
+
+	return customFields, nil
 }

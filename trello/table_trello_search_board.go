@@ -24,13 +24,13 @@ func tableTrelloSearchBoard(_ context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the board.",
+				Description: "The unique identifier for the board.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
-				Description: "The full name of the board.",
+				Description: "The name of the board.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -41,42 +41,42 @@ func tableTrelloSearchBoard(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "closed",
-				Description: "Whether the board is closed.",
+				Description: "Indicates whether the board is closed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "description",
-				Description: "The description of the board.",
+				Description: "A description or summary of the board.",
 				Hydrate:     getBoard,
 				Transform:   transform.FromField("Desc"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "id_organization",
-				Description: "The ID of the organization that the board belongs to.",
+				Description: "The id of the organization associated with the board.",
 				Transform:   transform.FromField("IDOrganization"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "pinned",
-				Description: "Whether the board is pinned.",
+				Description: "Indicates whether the board is pinned.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "short_url",
-				Description: "The short URL of the board.",
+				Description: "The shortened URL of the board.",
 				Hydrate:     getBoard,
 				Transform:   transform.FromField("ShortURL"),
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "starred",
-				Description: "Whether the board is starred.",
+				Description: "Indicates whether the board is starred.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "subscribed",
-				Description: "Whether the board has been subscribed.",
+				Description: "Indicates whether the board has been subscribed.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
@@ -88,6 +88,13 @@ func tableTrelloSearchBoard(_ context.Context) *plugin.Table {
 			},
 
 			// JSON fields
+			{
+				Name:        "custom_fields",
+				Description: "The custom fields associated to the board.",
+				Hydrate:     getBoardCustomFields,
+				Transform:   transform.FromValue(),
+				Type:        proto.ColumnType_JSON,
+			},
 			{
 				Name:        "label_names",
 				Description: "The label names of the board.",

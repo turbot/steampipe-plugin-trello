@@ -1,6 +1,6 @@
-# Table: trello_board
+# Table: trello_my_board
 
-A board represents a project or a high-level category. Within a board, you can create lists and cards to organize your work.
+A board represents a project or a high-level category. Within a board, you can create lists and cards to organize your work. This table is a view of all boards that you are a member of.
 
 ## Examples
 
@@ -15,10 +15,10 @@ select
   closed,
   url
 from 
-  trello_board;
+  trello_my_board;
 ``` 
 
-### Get all boards that are open
+### Get my boards that are open
 
 ```sql
 select
@@ -29,12 +29,12 @@ select
   closed,
   url
 from
-  trello_board
+  trello_my_board
 where
   not closed;
 ```
 
-### Get all boards that are pinned
+### Get my boards that are pinned
 
 ```sql
 select
@@ -45,12 +45,12 @@ select
   closed,
   url
 from
-  trello_board
+  trello_my_board
 where
   pinned;
 ```
 
-### Get all boards that are starred
+### Get my boards that are starred
 
 ```sql
 select
@@ -61,12 +61,12 @@ select
   closed,
   url 
 from
-  trello_board
+  trello_my_board
 where
   starred;
 ```
 
-### Get all boards in a specific organization
+### Get my boards in a specific organization
 
 ```sql
 select
@@ -77,12 +77,12 @@ select
   closed,
   url
 from
-  trello_board
+  trello_my_board
 where
   id_organization = '1234ce0f581f4de8a0dc184c';
 ```
 
-### List all boards with a specific label
+### List my boards with a specific label
 
 ```sql
 select
@@ -92,7 +92,7 @@ select
   l.key as label_key,
   l.value as label_value
 from
-  trello_board,
+  trello_my_board,
   jsonb_each_text(label_names) l
 where
   l.value = 'Blocked';
@@ -108,7 +108,7 @@ select
   p.key as pref_key,
   p.value as pref_value
 from
-  trello_board,
+  trello_my_board,
   jsonb_each_text(prefs) p;
 ```
 
@@ -128,6 +128,6 @@ select
   c ->> 'Display' as custom_field_display,
   c ->> 'Options' as custom_field_options
 from
-  trello_board,
+  trello_my_board,
   jsonb_array_elements(custom_fields) c;
 ```

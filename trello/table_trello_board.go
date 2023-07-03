@@ -2,6 +2,7 @@ package trello
 
 import (
 	"context"
+	"path"
 	"strings"
 
 	"github.com/adlio/trello"
@@ -13,9 +14,9 @@ import (
 func tableTrelloBoard(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_board",
-		Description: "Get details of a board.",
+		Description: "Get details of all the boards in your organization.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.OptionalColumns([]string{"id_organization", "closed"}),
+			KeyColumns:        plugin.OptionalColumns([]string{"id_organization"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			ParentHydrate:     listMyOrganizations,
 			Hydrate:           listBoards,
@@ -33,17 +34,9 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := h.Item.(trello.Organization).ID
-	var filter []string // "all" is the default
 
 	if d.EqualsQuals["id_organization"] != nil && d.EqualsQualString("id_organization") != id {
 		return nil, nil
-	}
-	if d.EqualsQuals["closed"] != nil {
-		if d.EqualsQuals["closed"].GetBoolValue() {
-			filter = append(filter, "closed")
-		} else {
-			filter = append(filter, "open")
-		}
 	}
 
 	// Create client
@@ -53,9 +46,7 @@ func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 		return nil, err
 	}
 
-	args := trello.Arguments{
-		"filter": strings.Join(filter, ","),
-	}
+	args := trello.Arguments{}
 
 	boards, err := client.GetBoardsInOrganization(id, args)
 	if err != nil {
@@ -70,10 +61,15 @@ func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 	return nil, nil
 }
 
-func getBoard(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getBoard(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	id := d.EqualsQualString("id")
+	var id string
+	if h.Item != nil {
+		id = h.Item.(*trello.Board).ID
+	} else {
+		id = d.EqualsQualString("id")
+	}
 
 	// Return nil if the id is empty
 	if id == "" {
@@ -96,4 +92,32 @@ func getBoard(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 	}
 
 	return board, nil
+}
+
+func getBoardCustomFields(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
+	id := h.Item.(*trello.Board).ID
+
+	// Create client
+	client, err := connectTrello(ctx, d)
+	if err != nil {
+		logger.Error("trello_board.getBoardCustomFields", "connection_error", err)
+		return nil, err
+	}
+
+	args := trello.Arguments{}
+	var customFields []trello.CustomField
+
+	path := path.Join("boards", id, "customFields")
+	error := client.Get(path, args, &customFields)
+	if error != nil {
+		if strings.Contains(error.Error(), "non-pointer") {
+			return nil, nil
+		}
+		logger.Error("trello_board.getBoardCustomFields", "api_error", error)
+		return nil, error
+	}
+
+	return customFields, nil
 }

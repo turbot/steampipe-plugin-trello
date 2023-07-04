@@ -139,6 +139,6 @@ func getOrganizationTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 }
 
 type Tag struct {
-	id   string `json:"id"`
-	name string `json:"name"`
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }

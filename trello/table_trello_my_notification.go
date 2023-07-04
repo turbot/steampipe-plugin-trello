@@ -14,25 +14,25 @@ import (
 func tableTrelloMyNotification(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_my_notification",
-		Description: "Get details of my notifications.",
+		Description: "Get details of your notifications.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyNotifications,
 		},
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the notification.",
+				Description: "The unique identifier for notification.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "date",
-				Description: "The date of the notification.",
+				Description: "The timestamp of when the notification was created.",
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "date_read",
-				Description: "The date of the notification read.",
+				Description: "The timestamp of when the notification was read.",
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -47,24 +47,19 @@ func tableTrelloMyNotification(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "type",
-				Description: "The type of the notification.",
+				Description: "The type of notification.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "unread",
-				Description: "Whether the notification is unread.",
+				Description: "Indicates whether the notification is unread.",
 				Type:        proto.ColumnType_BOOL,
 			},
 
 			// JSON fields
 			{
 				Name:        "data",
-				Description: "The data of the notification.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "member_creator",
-				Description: "The member who created the notification.",
+				Description: "Additional data related to the notification, which varies depending on the notification type.",
 				Type:        proto.ColumnType_JSON,
 			},
 

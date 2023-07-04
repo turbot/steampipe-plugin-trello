@@ -2,7 +2,7 @@
 
 # Trello Plugin for Steampipe
 
-Use SQL to query audiences, automation workflows, campaigns, and more from Trello
+Use SQL to query boards, cards, lists, and more from Trello
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/trello)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/trello/tables)
@@ -11,26 +11,60 @@ Use SQL to query audiences, automation workflows, campaigns, and more from Trell
 
 ## Quick start
 
-Install the plugin with [Steampipe](https://steampipe.io):
+### Install
 
-```shell
+Download and install the latest Trello plugin:
+
+```bash
 steampipe plugin install trello
 ```
 
-Run a query:
+Configure your [credentials](https://hub.steampipe.io/plugins/turbot/trello#credentials) and [config file](https://hub.steampipe.io/plugins/turbot/trello#configuration).
+
+Configure your account details in `~/.steampipe/config/trello.spc`:
+
+```hcl
+connection "trello" {
+  plugin = "trello"
+
+  # Authentication information
+  trello_api_key = "a25ad2e37570117c0bad72d0a711ba5af"
+  trello_token = "ATTAb179ea3c211722b0ebb2d223e1922b5e1ab1d28a3caac8d3722a83e9f91f25b973FDCC07"
+}
+```
+
+Or through environment variables:
+
+```sh
+export TRELLO_API_KEY=a25ad2e37570117c0bad72d0a711ba5af
+export TRELLO_TOKEN=ATTAb179ea3c211722b0ebb2d223e1922b5e1ab1d28a3caac8d3722a83e9f91f25b973FDCC07
+```
+
+Run steampipe:
+
+```shell
+steampipe query
+```
+
+List details of the boards associated with your Trello account:
 
 ```sql
 select
   id,
-  title,
-  content_type,
-  create_time,
-  emails_sent,
-  send_time,
-  status,
-  type
-from
-  trello_campaign;
+  name,
+  id_organization,
+  closed,
+  url
+from 
+  trello_board;
+```
+
+```
++--------------------------+------------------------------------+--------------------------+--------+------------------------------------------------------------------+
+| id                       | name                               | id_organization          | closed | url                                                              |
++--------------------------+------------------------------------+--------------------------+--------+------------------------------------------------------------------+
+| 123ace54605094aa59b02c42 | Trello Agile Sprint Board Template | 649ace0f581f4de8a0dc184c | true   | https://trello.com/b/21wGVYiR/trello-agile-sprint-board-template |
++--------------------------+------------------------------------+--------------------------+--------+------------------------------------------------------------------+
 ```
 
 ## Developing

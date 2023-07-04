@@ -15,7 +15,7 @@ import (
 func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_search_card",
-		Description: "Get details of a card.",
+		Description: "Find cards you have access to that match search keywords.",
 		List: &plugin.ListConfig{
 			KeyColumns:        plugin.SingleColumn("query"),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),

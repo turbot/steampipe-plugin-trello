@@ -14,7 +14,7 @@ import (
 func tableTrelloWebhook(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_webhook",
-		Description: "Get details of the webhook.",
+		Description: "Get details of the webhooks.",
 		List: &plugin.ListConfig{
 			KeyColumns:        plugin.AnyColumn([]string{"id"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
@@ -23,18 +23,18 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the webhook.",
+				Description: "The unique identifier for the webhook.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "active",
-				Description: "Whether the webhook is active.",
+				Description: "Indicates whether the webhook is active.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "callback_url",
-				Description: "The callback url of the webhook.",
+				Description: "The callback url for the webhook.",
 				Transform:   transform.FromField("CallbackURL"),
 				Type:        proto.ColumnType_STRING,
 			},

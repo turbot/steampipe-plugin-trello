@@ -14,14 +14,14 @@ import (
 func tableTrelloMyMember(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_my_member",
-		Description: "Get details of my trello member.",
+		Description: "Get details of your trello user.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyMembers,
 		},
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
-				Description: "The id of the member.",
+				Description: "The unique identifier of the member.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},

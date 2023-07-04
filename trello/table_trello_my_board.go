@@ -14,7 +14,7 @@ import (
 func tableTrelloMyBoard(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_my_board",
-		Description: "Get details boards I have access to.",
+		Description: "Get details of the boards you have access to.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyBoards,
 		},

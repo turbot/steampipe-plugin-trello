@@ -15,7 +15,7 @@ import (
 func tableTrelloCard(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_card",
-		Description: "Get details of all cards.",
+		Description: "Get details of all cards in a list.",
 		List: &plugin.ListConfig{
 			KeyColumns:        plugin.AnyColumn([]string{"id_list"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),

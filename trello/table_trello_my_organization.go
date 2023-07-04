@@ -15,7 +15,7 @@ import (
 func tableTrelloMyOrganization(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_my_organization",
-		Description: "Get details of my organizations.",
+		Description: "Get details of my organizations you have access to.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyOrganizations,
 		},
@@ -27,7 +27,7 @@ func getOrganizationColumns() []*plugin.Column {
 	return []*plugin.Column{
 		{
 			Name:        "id",
-			Description: "The id of the organization.",
+			Description: "The unique identifier for the organization.",
 			Type:        proto.ColumnType_STRING,
 			Transform:   transform.FromField("ID"),
 		},
@@ -38,7 +38,7 @@ func getOrganizationColumns() []*plugin.Column {
 		},
 		{
 			Name:        "description",
-			Description: "The description of the organization.",
+			Description: "The description or summary of the organization.",
 			Transform:   transform.FromField("Desc"),
 			Type:        proto.ColumnType_STRING,
 		},
@@ -55,19 +55,14 @@ func getOrganizationColumns() []*plugin.Column {
 		},
 		{
 			Name:        "website",
-			Description: "Link to the organization's website.",
+			Description: "The website associated with the organization.",
 			Type:        proto.ColumnType_STRING,
 		},
 
 		// JSON fields
 		{
-			Name:        "products",
-			Description: "The products of the organization.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
 			Name:        "power_ups",
-			Description: "The power ups that are a part of the organization.",
+			Description: "The power-ups enabled for the organization.",
 			Type:        proto.ColumnType_JSON,
 		},
 		{

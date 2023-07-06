@@ -64,7 +64,7 @@ where
   and not closed;
 ```
 
-### Get all cards in a list in order of their time due, with the most recent due first
+### Get all cards in a list in order of their due date, with the most recent due first
 
 ```sql
 select
@@ -155,4 +155,42 @@ from
 where
   id_list='123ace54605094aa59b02c4b'
   and m.id = mid;
+```
+
+### List all open cards in a list
+
+```sql
+select
+  id,
+  name,
+  description,
+  id_board,
+  id_list,
+  start,
+  due,
+  closed
+from
+  trello_card
+where
+  id_list='123ace54605094aa59b02c4b'
+  and not closed;
+```
+
+### List all cards in a list that have been subscribed to
+
+```sql
+select
+  id,
+  name,
+  description,
+  id_board,
+  id_list,
+  start,
+  due,
+  closed
+from
+  trello_card
+where
+  id_list='123ace54605094aa59b02c4b'
+  and subscribed;
 ```

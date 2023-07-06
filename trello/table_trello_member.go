@@ -120,6 +120,8 @@ func listMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	return nil, nil
 }
 
+//// HYDRATE FUNCTIONS
+
 func getMember(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 

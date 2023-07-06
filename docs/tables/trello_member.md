@@ -17,7 +17,7 @@ from
   trello_member;
 ```
 
-### Get boards each member has access to
+### List the boards that each member has access to
 
 ```sql
 select
@@ -33,7 +33,7 @@ where
   b.id = idb;
 ```
 
-### Get organizations each member has been assigned to
+### List the organizations that each member have been assigned to
 
 ```sql
 select

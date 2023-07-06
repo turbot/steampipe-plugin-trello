@@ -33,6 +33,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"trello_organization":    tableTrelloOrganization(ctx),
 			"trello_search_board":    tableTrelloSearchBoard(ctx),
 			"trello_search_card":     tableTrelloSearchCard(ctx),
+			"trello_token":           tableTrelloToken(ctx),
 			"trello_webhook":         tableTrelloWebhook(ctx),
 		},
 	}

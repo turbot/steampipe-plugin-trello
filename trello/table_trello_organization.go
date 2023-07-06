@@ -13,10 +13,9 @@ func tableTrelloOrganization(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "trello_organization",
 		Description: "Get details of the organization.",
-		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id"}),
-			ShouldIgnoreError: isNotFoundError([]string{"404"}),
-			Hydrate:           listOrganizations,
+		Get: &plugin.GetConfig{
+			KeyColumns: plugin.AnyColumn([]string{"id"}),
+			Hydrate:    getOrganization,
 		},
 		Columns: getOrganizationColumns(),
 	}
@@ -24,7 +23,7 @@ func tableTrelloOrganization(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getOrganization(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	id := d.EqualsQualString("id")
@@ -49,7 +48,5 @@ func listOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, *organization)
-
-	return nil, nil
+	return *organization, nil
 }

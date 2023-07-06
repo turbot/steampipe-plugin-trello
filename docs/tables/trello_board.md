@@ -82,6 +82,22 @@ where
   id_organization = '1234ce0f581f4de8a0dc184c';
 ```
 
+### Get the details for a specific board
+
+```sql
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url
+from
+  trello_board
+where
+  id = '1234ce0f581f4de8a0dc184c';
+```
+
 ### List all boards with a specific label
 
 ```sql
@@ -98,7 +114,7 @@ where
   l.value = 'Blocked';
 ```
 
-### List all board preferences
+### List preferences for each board
 
 ```sql
 select
@@ -112,7 +128,7 @@ from
   jsonb_each_text(prefs) p;
 ```
 
-### List all board custom fields
+### List custom fields for each board
 
 ```sql
 select

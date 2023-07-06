@@ -13,21 +13,23 @@ select
   id,
   name,
   id_board,
-  closed
+  closed,
+  pos
 from
   trello_list
 where
   id_board = '12330ad5e3b81053d7d5315b';
 ```
 
-### Get lists that are closed in a specific board
+### Get lists in a specific board which are closed
 
 ```sql
 select
   id,
   name,
   id_board,
-  closed
+  closed,
+  pos
 from
   trello_list
 where
@@ -35,14 +37,15 @@ where
   and closed;
 ```
 
-### Get lists in a board that have been subscribed to
+### Get lists in a board which have been subscribed to
 
 ```sql
 select
   id,
   name,
   id_board,
-  closed
+  closed,
+  pos
 from
   trello_list
 where

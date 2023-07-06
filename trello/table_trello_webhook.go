@@ -2,6 +2,7 @@ package trello
 
 import (
 	"context"
+	"path"
 
 	"github.com/adlio/trello"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -16,9 +17,13 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 		Name:        "trello_webhook",
 		Description: "Get details of the webhooks.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id"}),
+			KeyColumns:        plugin.AnyColumn([]string{"id_token"}),
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			Hydrate:           listWebhooks,
+		},
+		Get: &plugin.GetConfig{
+			KeyColumns: plugin.SingleColumn("id"),
+			Hydrate:    getWebhook,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -26,6 +31,12 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 				Description: "The unique identifier for the webhook.",
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
+			},
+			{
+				Name:        "id_token",
+				Description: "The id of the token the webhook belongs to.",
+				Transform:   transform.FromQual("id_token"),
+				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "active",
@@ -66,13 +77,7 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 
 func listWebhooks(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-
-	id := d.EqualsQualString("id")
-
-	// Return if the id is empty
-	if id == "" {
-		return nil, nil
-	}
+	id := d.EqualsQualString("id_token")
 
 	// Create client
 	client, err := connectTrello(ctx, d)
@@ -82,14 +87,47 @@ func listWebhooks(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 	}
 
 	args := trello.Arguments{}
+	var webhooks []*trello.Webhook
 
-	webhook, err := client.GetWebhook(id, args)
+	path := path.Join("tokens", id, "webhooks")
+	error := client.Get(path, args, &webhooks)
+	if error != nil {
+		logger.Error("trello_webhook.listWebhooks", "api_error", error)
+		return nil, error
+	}
+
+	for _, webhook := range webhooks {
+		d.StreamListItem(ctx, webhook)
+	}
+
+	return nil, nil
+}
+
+//// HYDRATE FUNCTIONS
+
+func getWebhook(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := d.EqualsQualString("id")
+
+	// Return nil if the id is empty
+	if id == "" {
+		return nil, nil
+	}
+
+	// Create client
+	client, err := connectTrello(ctx, d)
 	if err != nil {
-		logger.Error("trello_webhook.listWebhooks", "api_error", err)
+		logger.Error("trello_webhook.getWebhook", "connection_error", err)
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, webhook)
+	args := trello.Arguments{}
 
-	return nil, nil
+	webhook, err := client.GetWebhook(id, args)
+	if err != nil {
+		logger.Error("trello_webhook.getWebhook", "api_error", err)
+		return nil, err
+	}
+
+	return webhook, nil
 }

@@ -61,6 +61,8 @@ func listBoards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 	return nil, nil
 }
 
+//// HYDRATE FUNCTIONS
+
 func getBoard(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 

@@ -18,7 +18,7 @@ from
   trello_my_board;
 ``` 
 
-### Get my boards that are open
+### List my boards that are open
 
 ```sql
 select
@@ -34,7 +34,7 @@ where
   not closed;
 ```
 
-### Get my boards that are pinned
+### List my boards that are pinned
 
 ```sql
 select
@@ -50,7 +50,7 @@ where
   pinned;
 ```
 
-### Get my boards that are starred
+### List my boards that are starred
 
 ```sql
 select
@@ -66,7 +66,7 @@ where
   starred;
 ```
 
-### Get my boards in a specific organization
+### List my boards in a specific organization
 
 ```sql
 select
@@ -98,7 +98,7 @@ where
   l.value = 'Blocked';
 ```
 
-### List all board preferences
+### List preferences for each board
 
 ```sql
 select
@@ -112,7 +112,7 @@ from
   jsonb_each_text(prefs) p;
 ```
 
-### List all board custom fields
+### List custom fields for each board
 
 ```sql
 select

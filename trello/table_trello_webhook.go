@@ -18,12 +18,13 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 		Description: "Get details of the webhooks.",
 		List: &plugin.ListConfig{
 			KeyColumns:        plugin.AnyColumn([]string{"id_token"}),
-			ShouldIgnoreError: isNotFoundError([]string{"404"}),
+			ShouldIgnoreError: isNotFoundError([]string{"400: invalid token"}),
 			Hydrate:           listWebhooks,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getWebhook,
+			KeyColumns:        plugin.SingleColumn("id"),
+			ShouldIgnoreError: isNotFoundError([]string{"400: invalid id"}),
+			Hydrate:           getWebhook,
 		},
 		Columns: []*plugin.Column{
 			{

@@ -12,8 +12,9 @@ const pluginName = "steampipe-plugin-trello"
 // Plugin creates this (trello) plugin
 func Plugin(ctx context.Context) *plugin.Plugin {
 	p := &plugin.Plugin{
-		Name:             pluginName,
-		DefaultTransform: transform.FromCamel().Transform(transform.NullIfZeroValue),
+		Name:               pluginName,
+		DefaultTransform:   transform.FromCamel().Transform(transform.NullIfZeroValue),
+		DefaultRetryConfig: &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError([]string{"429"})},
 		DefaultGetConfig: &plugin.GetConfig{
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 		},

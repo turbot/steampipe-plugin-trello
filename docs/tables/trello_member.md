@@ -17,6 +17,21 @@ from
   trello_member;
 ```
 
+### List members registered under a given email address
+
+```sql
+select
+  id,
+  username,
+  full_name,
+  email,
+  initials
+from
+  trello_member
+where
+  email = 'abc@gmal.com';
+```
+
 ### List the boards that each member has access to
 
 ```sql

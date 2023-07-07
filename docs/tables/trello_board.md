@@ -14,11 +14,11 @@ select
   id_organization,
   closed,
   url
-from 
+from
   trello_board;
-``` 
+```
 
-### Get all boards that are open
+### List all boards that are open
 
 ```sql
 select
@@ -34,7 +34,7 @@ where
   not closed;
 ```
 
-### Get all boards that are pinned
+### List all boards that are pinned
 
 ```sql
 select
@@ -50,7 +50,7 @@ where
   pinned;
 ```
 
-### Get all boards that are starred
+### List all boards that are starred
 
 ```sql
 select
@@ -59,14 +59,14 @@ select
   description,
   id_organization,
   closed,
-  url 
+  url
 from
   trello_board
 where
   starred;
 ```
 
-### Get all boards in a specific organization
+### List all boards in a specific organization
 
 ```sql
 select
@@ -82,7 +82,7 @@ where
   id_organization = '1234ce0f581f4de8a0dc184c';
 ```
 
-### Get the details for a specific board
+### List the details for a specific board
 
 ```sql
 select
@@ -126,6 +126,22 @@ select
 from
   trello_board,
   jsonb_each_text(prefs) p;
+```
+
+### List all subscribed boards
+
+```sql
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url
+from
+  trello_board
+where
+  subscribed;
 ```
 
 ### List custom fields for each board

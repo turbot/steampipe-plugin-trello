@@ -34,6 +34,22 @@ where
   unread;
 ```
 
+### List all notifications created by a particular member
+
+```sql
+select
+  id,
+  date,
+  unread,
+  type,
+  data,
+  id_member_creator
+from
+  trello_my_notification
+where
+  id_member_creator = '34458739284892367890';
+```
+
 ### List all notifications from last week
 
 ```sql

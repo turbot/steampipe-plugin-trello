@@ -61,11 +61,6 @@ func getOrganizationColumns() []*plugin.Column {
 
 		// JSON fields
 		{
-			Name:        "power_ups",
-			Description: "The power-ups enabled for the organization.",
-			Type:        proto.ColumnType_JSON,
-		},
-		{
 			Name:        "tags",
 			Description: "The organization tags.",
 			Hydrate:     getOrganizationTags,

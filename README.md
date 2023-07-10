@@ -28,8 +28,8 @@ connection "trello" {
   plugin = "trello"
 
   # Authentication information
-  trello_api_key = "a25ad2e37570117c0bad72d0a711ba5af"
-  trello_token = "ATTAb179ea3c211722b0ebb2d223e1922b5e1ab1d28a3caac8d3722a83e9f91f25b973FDCC07"
+  api_key = "a25ad2e37570117c0bad72d0a711ba5af"
+  token = "ATTAb179ea3c211722b0ebb2d223e1922b5e1ab1d28a3caac8d3722a83e9f91f25b973FDCC07"
 }
 ```
 

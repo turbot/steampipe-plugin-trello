@@ -23,19 +23,19 @@ func connectTrello(ctx context.Context, d *plugin.QueryData) (*trello.Client, er
 
 	// But prefer the config (#1)
 	trelloConfig := GetConfig(d.Connection)
-	if trelloConfig.TrelloAPIKey != nil {
-		apiKey = *trelloConfig.TrelloAPIKey
+	if trelloConfig.APIKey != nil {
+		apiKey = *trelloConfig.APIKey
 	}
-	if trelloConfig.TrelloToken != nil {
-		token = *trelloConfig.TrelloToken
+	if trelloConfig.Token != nil {
+		token = *trelloConfig.Token
 	}
 
 	// Error if the minimum config is not set
 	if apiKey == "" {
-		return nil, errors.New("trello_api_key must be configured")
+		return nil, errors.New("api_key must be configured")
 	}
 	if token == "" {
-		return nil, errors.New("trello_token must be configured")
+		return nil, errors.New("token must be configured")
 	}
 
 	client := trello.NewClient(apiKey, token)

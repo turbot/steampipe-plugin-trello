@@ -6,15 +6,15 @@ import (
 )
 
 type trelloConfig struct {
-	TrelloAPIKey *string `cty:"trello_api_key"`
-	TrelloToken  *string `cty:"trello_token"`
+	APIKey *string `cty:"api_key"`
+	Token  *string `cty:"token"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
-	"trello_api_key": {
+	"api_key": {
 		Type: schema.TypeString,
 	},
-	"trello_token": {
+	"token": {
 		Type: schema.TypeString,
 	},
 }

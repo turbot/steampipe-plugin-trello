@@ -2,7 +2,7 @@
 
 Cards are individual items or tasks within a list. They can represent specific tasks, ideas, or notes. Cards can be moved between lists to indicate progress or changes in status.
 
-**You must always include at least one search term when searching** in the where or join clause using the `query` column. You can narrow the results using the search qualifiers in any combination. See [Trello search](https://trello.com/search) for details on the Trello query syntax.
+**You must always include at least one search term** in the where or join clause using the `query` column. You can narrow the results using the search qualifiers in any combination. See [Trello search](https://trello.com/search) for details on the Trello query syntax.
 
 ## Examples
 

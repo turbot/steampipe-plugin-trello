@@ -18,7 +18,7 @@ from
   trello_my_board;
 ``` 
 
-### List my boards that are open
+### List my open boards
 
 ```sql
 select
@@ -34,7 +34,7 @@ where
   not closed;
 ```
 
-### List my boards that are pinned
+### List my pinned boards
 
 ```sql
 select
@@ -50,7 +50,7 @@ where
   pinned;
 ```
 
-### List my boards that are starred
+### List my starred boards
 
 ```sql
 select

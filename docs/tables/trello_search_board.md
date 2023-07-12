@@ -2,7 +2,7 @@
 
 A board represents a project or a high-level category. Within a board, you can create lists and cards to organize your work.
 
-**You must always include at least one search term when searching** in the where or join clause using the `query` column. You can narrow the results using the search qualifiers in any combination. See [Trello search](https://trello.com/search) for details on the Trello query syntax.
+**You must always include at least one search term** in the where or join clause using the `query` column. You can narrow the results using the search qualifiers in any combination. See [Trello search](https://trello.com/search) for details on the Trello query syntax.
 
 ## Examples
 

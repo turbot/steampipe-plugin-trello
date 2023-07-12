@@ -2,7 +2,7 @@
 
 Lists are columns on a board that represent different stages of a project or workflow.
 
-The `trello_list` table can be used to query information about **ANY** list, and **you must specify which board** in the where or join clause (`where id_board=`, `join trello_board b on b.id=`).
+The `trello_list` table can be used to query information about **ANY** list, and **you must specify the board ID** in the where or join clause (`where id_board=`, `join trello_board b on b.id=`).
 
 ## Examples
 

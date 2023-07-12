@@ -2,7 +2,7 @@
 
 Cards are individual items or tasks within a list. They can represent specific tasks, ideas, or notes. Cards can be moved between lists to indicate progress or changes in status.
 
-The `trello_card` table can be used to query information about **ANY** card, and **you must specify which list** in the where or join clause (`where id_list=`, `join trello_list l on l.id=`).
+The `trello_card` table can be used to query information about **ANY** card, and **you must specify the list ID** in the where or join clause (`where id_list=`, `join trello_list l on l.id=`).
 
 ## Examples
 

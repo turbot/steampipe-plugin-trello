@@ -2,7 +2,7 @@
 
 Tokens are used for API access and allow applications to perform actions on behalf of users.
 
-The `trello_token` table can be used to query information about **ANY** webhook, and **you must specify which member** in the where clause (`where id_member=`).
+The `trello_token` table can be used to query information about **ANY** webhook, and **you must specify member ID** in the where clause (`where id_member=`).
 
 ## Examples
 
@@ -37,7 +37,7 @@ where
   and id_member='1234ace54605094aa59b02c4b';
 ```
 
-### Get details for a particular token
+### Get details of a particular token
 
 ```sql
 select
@@ -52,7 +52,7 @@ where
   id='1234ace54605094aa59b02c4b';
 ```
 
-### Get all tokens for a particular member
+### Get all tokens of a particular member
 
 ```sql
 select
@@ -83,7 +83,7 @@ where
   and id_member='1234ace54605094aa59b02c4b';
 ```
 
-### Get permissions for each token
+### Get permission details of each token
 
 ```sql
 select

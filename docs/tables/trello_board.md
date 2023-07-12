@@ -82,7 +82,7 @@ where
   id_organization = '1234ce0f581f4de8a0dc184c';
 ```
 
-### List the details for a specific board
+### List the details of a specific board
 
 ```sql
 select
@@ -114,7 +114,7 @@ where
   l.value = 'Blocked';
 ```
 
-### List preferences for each board
+### List preferences of each board
 
 ```sql
 select
@@ -144,7 +144,7 @@ where
   subscribed;
 ```
 
-### List custom fields for each board
+### List the custom fields of each board
 
 ```sql
 select

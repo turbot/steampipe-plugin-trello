@@ -91,4 +91,4 @@ export TRELLO_TOKEN=ATTAb179ea3c211722b0ebb2d223e1922b5e1ab1d28a3caac8d3722a83e9
 ## Get involved
 
 - Open source: https://github.com/turbot/steampipe-plugin-trello
-- Community: [Slack Channel](https://steampipe.io/community/join)
+- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)

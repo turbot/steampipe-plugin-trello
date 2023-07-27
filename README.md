@@ -6,7 +6,7 @@ Use SQL to query boards, cards, lists, and more from Trello.
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/trello)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/trello/tables)
-- Community: [Slack Channel](https://steampipe.io/community/join)
+- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
 - Get involved: [Issues](https://github.com/turbot/steampipe-plugin-trello/issues)
 
 ## Quick start

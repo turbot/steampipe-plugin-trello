@@ -1,12 +1,20 @@
-# Table: trello_list
+---
+title: "Steampipe Table: trello_list - Query Trello Lists using SQL"
+description: "Allows users to query Trello Lists, specifically enabling the extraction of detailed information about lists in a Trello board."
+---
 
-Lists are columns on a board that represent different stages of a project or workflow.
+# Table: trello_list - Query Trello Lists using SQL
 
-The `trello_list` table can be used to query information about **ANY** list, and **you must specify the board ID** in the where or join clause (`where id_board=`, `join trello_board b on b.id=`).
+Trello is a collaboration tool that organizes your projects into boards. A Trello board is a list of lists, filled with cards, used by you and your team. The Trello List resource in this context represents a list within a specific Trello board.
+
+## Table Usage Guide
+
+The `trello_list` table provides insights into lists within Trello boards. As a project manager or team leader, you can use this table to explore list-specific details, including card count, list status (open or closed), and associated metadata. This table is useful for tracking the progress of tasks and managing workflow across different projects or teams.
 
 ## Examples
 
 ### Basic info
+Explore which Trello lists are active or closed within a specific board. This can help manage workflow and track project progress.
 
 ```sql
 select
@@ -22,6 +30,7 @@ where
 ```
 
 ### Get lists in a specific board which are closed
+Explore which lists within a specific project board have been closed. This is particularly useful to track project progress and identify any tasks that are no longer active.
 
 ```sql
 select
@@ -38,6 +47,7 @@ where
 ```
 
 ### Get lists in a board which have been subscribed to
+Discover the segments that have been subscribed to within a specific board. This is useful in identifying the areas of interest or focus for a particular team or project.
 
 ```sql
 select
@@ -54,6 +64,7 @@ where
 ```
 
 ### Get total lists in each board
+Explore which boards have the most lists to better manage your project workflows and resource allocation. This can help in identifying where most activity is concentrated and aid in balancing the workload.
 
 ```sql
 select

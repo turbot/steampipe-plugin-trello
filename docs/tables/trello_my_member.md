@@ -1,10 +1,20 @@
-# Table: trello_my_member
+---
+title: "Steampipe Table: trello_my_member - Query Trello Members using SQL"
+description: "Allows users to query Trello Members, specifically providing details about the user profile, including full name, username, email, and avatar hash."
+---
 
-A member is an individual user who has access to a Trello board. Members can be added to boards to collaborate on projects, tasks, or any other work being managed within Trello. This table is a view of the your user details.
+# Table: trello_my_member - Query Trello Members using SQL
+
+Trello is a web-based, list-making application, originally made by Fog Creek Software in 2011. It operates via boards (which correspond to projects), lists (which correspond to task lists), and cards (which correspond to tasks). A Trello member refers to a user who has an account with Trello and can create and manage boards, lists, and cards.
+
+## Table Usage Guide
+
+The `trello_my_member` table provides insights into Trello members. As a project manager or team leader, explore member-specific details through this table, including full name, username, email, and avatar hash. Utilize it to uncover information about members, such as their activity on different boards and their interaction with various tasks.
 
 ## Examples
 
 ### Basic info
+Explore which member details are available in your Trello account, such as user ID, username, full name, email, and initials. This can be useful in identifying and managing users, especially in a large team.
 
 ```sql
 select
@@ -18,6 +28,7 @@ from
 ```
 
 ### Get boards I have access to
+Explore the various boards you have access to within Trello, allowing you to quickly identify and manage your permissions across different projects. This is particularly useful for understanding your involvement and access level across various team boards.
 
 ```sql
 select
@@ -34,6 +45,7 @@ where
 ```
 
 ### Get organizations I have been assigned to
+Explore which organizations you've been assigned to, providing a clear view of your involvement across different teams. This can help manage your tasks and collaborations more effectively.
 
 ```sql
 select

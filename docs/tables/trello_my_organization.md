@@ -16,7 +16,19 @@ The `trello_my_organization` table provides insights into Organizations within T
 ### Basic info
 Explore your Trello organization's basic details such as identification, name, description, display name, website URL, etc. This can be useful for gaining a quick overview or for auditing purposes.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  description,
+  display_name,
+  url,
+  website
+from
+  trello_my_organization;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -31,7 +43,7 @@ from
 ### List the members assigned to my organization
 Determine the members linked to your specific organization, in order to understand team composition and manage resources effectively.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -46,10 +58,41 @@ where
   and o.id = '123ace0f581f4de8a0dc184c';
 ```
 
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  o.id as organization_id,
+  o.name as organization_name
+from
+  trello_member m,
+  json_each(m.id_organizations) as ido,
+  trello_my_organization o
+where
+  o.id = ido.value
+  and o.id = '123ace0f581f4de8a0dc184c';
+```
+
 ### List details of the board associated to my organization
 Explore the specifics of an organization's board, such as its status and web address, to gain insights into its operational details and online presence. This is particularly useful for understanding the organization's current activities and accessibility.
 
-```sql
+```sql+postgres
+select
+  b.id,
+  b.name,
+  b.description,
+  b.id_organization,
+  b.closed,
+  b.url
+from
+  trello_board as b,
+  trello_my_organization as o
+where
+  b.id_organization = o.id
+  and b.id_organization = '1234ce0f581f4de8a0dc184c';
+```
+
+```sql+sqlite
 select
   b.id,
   b.name,

@@ -11,12 +11,28 @@ Trello Webhooks are used to receive immediate updates for events that occur in a
 
 The `trello_webhook` table provides insights into Webhooks within Trello. As a project manager or team lead, explore webhook-specific details through this table, including associated board, list, and card activities. Utilize it to uncover information about events, such as card creation, list updates, and other board activities, helping you track task progress and team activities in real-time.
 
+**Important Notes**
+- You must specify Token ID, `id_token`, in the `where` clause to query this table.
+
 ## Examples
 
 ### Basic info
 Explore active webhooks in Trello by identifying their unique IDs and descriptions. This is particularly useful for understanding the context and purpose of each webhook, especially when managing multiple webhooks tied to a specific token.
 
-```sql
+```sql+postgres
+select
+  id,
+  active,
+  description,
+  callback_url,
+  id_model
+from
+  trello_webhook
+where 
+  id_token='1234ace54605094aa59b02c4b';
+```
+
+```sql+sqlite
 select
   id,
   active,
@@ -32,7 +48,7 @@ where
 ### List all active webhooks
 Explore which webhooks are currently active in your Trello account. This can help in managing and monitoring the operations triggered by these webhooks.
 
-```sql
+```sql+postgres
 select
   id,
   active,
@@ -46,10 +62,37 @@ where
   and id_token='1234ace54605094aa59b02c4b';
 ```
 
+```sql+sqlite
+select
+  id,
+  active,
+  description,
+  callback_url,
+  id_model
+from 
+  trello_webhook
+where
+  active = 1
+  and id_token='1234ace54605094aa59b02c4b';
+```
+
 ### Get details of a particular webhook
 Analyze the settings of a specific webhook to understand its active status, purpose, and associated model. This is particularly useful when you need to troubleshoot or verify the functionality of a particular webhook.
 
-```sql
+```sql+postgres
+select
+  id,
+  active,
+  description,
+  callback_url,
+  id_model
+from
+  trello_webhook
+where
+  id='1234ace54605094aa59b02c4b';
+```
+
+```sql+sqlite
 select
   id,
   active,

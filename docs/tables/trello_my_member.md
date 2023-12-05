@@ -16,7 +16,18 @@ The `trello_my_member` table provides insights into Trello members. As a project
 ### Basic info
 Explore which member details are available in your Trello account, such as user ID, username, full name, email, and initials. This can be useful in identifying and managing users, especially in a large team.
 
-```sql
+```sql+postgres
+select
+  id,
+  username,
+  full_name,
+  email,
+  initials
+from
+  trello_my_member;
+```
+
+```sql+sqlite
 select
   id,
   username,
@@ -30,7 +41,7 @@ from
 ### Get boards I have access to
 Explore the various boards you have access to within Trello, allowing you to quickly identify and manage your permissions across different projects. This is particularly useful for understanding your involvement and access level across various team boards.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -44,10 +55,24 @@ where
   b.id = idb;
 ```
 
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  b.id as board_id,
+  b.name as board_name
+from
+  trello_my_member m,
+  json_each(m.id_boards) as idb,
+  trello_board b
+where
+  b.id = idb.value;
+```
+
 ### Get organizations I have been assigned to
 Explore which organizations you've been assigned to, providing a clear view of your involvement across different teams. This can help manage your tasks and collaborations more effectively.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -59,4 +84,18 @@ from
   trello_organization o
 where
   o.id = ido;
+```
+
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  o.id as organization_id,
+  o.name as organization_name
+from
+  trello_my_member m,
+  json_each(m.id_organizations) as ido,
+  trello_organization o
+where
+  o.id = ido.value;
 ```

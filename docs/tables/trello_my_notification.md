@@ -16,7 +16,19 @@ The `trello_my_notification` table provides insights into Trello Notifications w
 ### Basic info
 Discover the segments that contain unread notifications and their associated dates and types in your Trello account. This can help you pinpoint specific areas that require your attention, enabling you to manage your workload more effectively.
 
-```sql
+```sql+postgres
+select
+  id,
+  date,
+  unread,
+  type,
+  data,
+  id_member_creator
+from
+  trello_my_notification;
+```
+
+```sql+sqlite
 select
   id,
   date,
@@ -31,7 +43,7 @@ from
 ### List all unread notifications
 Discover the segments that contain all your unread notifications. This can help you manage your workload by focusing on the tasks that require your immediate attention.
 
-```sql
+```sql+postgres
 select
   id,
   date,
@@ -45,10 +57,38 @@ where
   unread;
 ```
 
+```sql+sqlite
+select
+  id,
+  date,
+  unread,
+  type,
+  data,
+  id_member_creator
+from
+  trello_my_notification
+where
+  unread = 1;
+```
+
 ### List all notifications created by a particular member
 Determine the notifications initiated by a specific member. This can help understand the member's activity and engagement level on the platform.
 
-```sql
+```sql+postgres
+select
+  id,
+  date,
+  unread,
+  type,
+  data,
+  id_member_creator
+from
+  trello_my_notification
+where
+  id_member_creator = '34458739284892367890';
+```
+
+```sql+sqlite
 select
   id,
   date,
@@ -65,7 +105,7 @@ where
 ### List all notifications from last week
 Discover the segments that have received notifications in the past week. This can help you keep track of recent activities and understand the areas where action might be needed.
 
-```sql
+```sql+postgres
 select
   id,
   date,
@@ -77,4 +117,18 @@ from
   trello_my_notification
 where
   date > now() - interval '1 week';
+```
+
+```sql+sqlite
+select
+  id,
+  date,
+  unread,
+  type,
+  data,
+  id_member_creator
+from
+  trello_my_notification
+where
+  date > datetime('now', '-7 day');
 ```

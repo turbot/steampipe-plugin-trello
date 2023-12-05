@@ -16,7 +16,19 @@ The `trello_my_board` table provides insights into personal boards within Trello
 ### Basic info
 Explore the Trello boards you're a part of, including their names, descriptions, and associated organizations. This can help you manage your work more efficiently by giving you a comprehensive view of your tasks and projects.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url
+from 
+  trello_my_board;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -31,7 +43,7 @@ from
 ### List my open boards
 Explore your active Trello boards to gain insights into their details and assess their organization affiliations. This allows for efficient board management by focusing only on boards that are currently open and active.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -45,10 +57,24 @@ where
   not closed;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url
+from
+  trello_my_board
+where
+  closed is not 1;
+```
+
 ### List my pinned boards
 Discover the details of your preferred boards on Trello. This query allows you to quickly identify and access your favorite boards, enhancing your ability to manage and prioritize tasks.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -62,10 +88,24 @@ where
   pinned;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url
+from
+  trello_my_board
+where
+  pinned = 1;
+```
+
 ### List my starred boards
 Explore your favorite Trello boards, gaining insights into their names, descriptions, associated organizations, and URLs. This is useful for quickly accessing and managing your preferred projects.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -79,10 +119,38 @@ where
   starred;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url 
+from
+  trello_my_board
+where
+  starred = 1;
+```
+
 ### List my boards in a specific organization
 Explore the boards that you have in a particular organization, helping you to manage and track your projects effectively. This can be particularly useful when you are part of multiple organizations and need to quickly identify all your boards within a specific one.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  description,
+  id_organization,
+  closed,
+  url
+from
+  trello_my_board
+where
+  id_organization = '1234ce0f581f4de8a0dc184c';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -99,16 +167,30 @@ where
 ### List my boards with a specific label
 Explore which of your Trello boards have been tagged with a 'Blocked' label. This can help you quickly identify and prioritize tasks that are facing obstacles.
 
-```sql
+```sql+postgres
 select
-  id,
-  name,
+  tmb.id,
+  tmb.name,
   id_organization,
   l.key as label_key,
   l.value as label_value
 from
-  trello_my_board,
+  trello_my_board as tmb,
   jsonb_each_text(label_names) l
+where
+  l.value = 'Blocked';
+```
+
+```sql+sqlite
+select
+  tmb.id,
+  tmb.name,
+  id_organization,
+  l.key as label_key,
+  l.value as label_value
+from
+  trello_my_board as tmb,
+  json_each(label_names) as l
 where
   l.value = 'Blocked';
 ```
@@ -116,25 +198,37 @@ where
 ### List preferences for each board
 Discover the individual preferences for each board you have on Trello. This can be useful to understand and optimize your board settings for better project management.
 
-```sql
+```sql+postgres
 select
-  id,
-  name,
+  tmb.id,
+  tmb.name,
   id_organization,
   p.key as pref_key,
   p.value as pref_value
 from
-  trello_my_board,
+  trello_my_board as tmb,
   jsonb_each_text(prefs) p;
+```
+
+```sql+sqlite
+select
+  tmb.id,
+  tmb.name,
+  id_organization,
+  p.key as pref_key,
+  p.value as pref_value
+from
+  trello_my_board as tmb,
+  json_each(prefs) p;
 ```
 
 ### List custom fields for each board
 Explore the customization options of each board by identifying the unique fields associated with them. This analysis can assist in understanding the various customization settings and configurations applied to each board, providing insights into their unique characteristics and usage.
 
-```sql
+```sql+postgres
 select
-  id,
-  name,
+  tmb.id,
+  tmb.name,
   c ->> 'ID' as custom_field_id,
   c ->> 'Name' as custom_field_name,
   c ->> 'IDModel' as custom_field_model_id,
@@ -145,6 +239,24 @@ select
   c ->> 'Display' as custom_field_display,
   c ->> 'Options' as custom_field_options
 from
-  trello_my_board,
+  trello_my_board as tmb,
   jsonb_array_elements(custom_fields) c;
+```
+
+```sql+sqlite
+select
+  tmb.id,
+  tmb.name,
+  json_extract(c.value, '$.ID') as custom_field_id,
+  json_extract(c.value, '$.Name') as custom_field_name,
+  json_extract(c.value, '$.IDModel') as custom_field_model_id,
+  json_extract(c.value, '$.IDModelType') as custom_field_model_type_id,
+  json_extract(c.value, '$.FieldGroup') as custom_field_group,
+  json_extract(c.value, '$.Pos') as custom_field_pos,
+  json_extract(c.value, '$.Type') as custom_field_type,
+  json_extract(c.value, '$.Display') as custom_field_display,
+  json_extract(c.value, '$.Options') as custom_field_options
+from
+  trello_my_board as tmb,
+  json_each(custom_fields) as c;
 ```

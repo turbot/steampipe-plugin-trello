@@ -11,12 +11,29 @@ Trello Organizations represent a team or group within Trello. They are used to g
 
 The `trello_organization` table provides insights into Trello Organizations. As a project manager or team leader, explore organization-specific details through this table, including names, descriptions, and associated boards. Utilize it to uncover information about organizations, such as their membership, associated boards, and the level of visibility of each board within the organization.
 
+**Important Notes**
+- You must specify Organization ID, `id`, in the `where` clause to query this table
+
 ## Examples
 
 ### Basic info
 Explore basic information about a specific Trello organization, such as its name, description, and website. This can be useful for understanding the organization's online presence and identity.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  description,
+  display_name,
+  url,
+  website
+from
+  trello_organization
+where
+  id = '123ace0f581f4de8a0dc184c';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -33,7 +50,7 @@ where
 ### List the members assigned to a particular organization
 Explore which users are linked to a specific organization. This can be useful for assessing membership or participation within certain organizational structures.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -48,10 +65,41 @@ where
   and o.id = '123ace0f581f4de8a0dc184c';
 ```
 
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  o.id as organization_id,
+  o.name as organization_name
+from
+  trello_member m,
+  json_each(m.id_organizations) as ido,
+  trello_organization o
+where
+  o.id = ido.value
+  and o.id = '123ace0f581f4de8a0dc184c';
+```
+
 ### List details of the board associated to a particular organization
 Explore the characteristics of a specific organization's board. This query is useful for gaining insights into the board's status, description, and accessibility, which can aid in organizational management and planning.
 
-```sql
+```sql+postgres
+select
+  b.id,
+  b.name,
+  b.description,
+  b.id_organization,
+  b.closed,
+  b.url
+from
+  trello_board as b,
+  trello_organization as o
+where
+  b.id_organization = o.id
+  and b.id_organization = '1234ce0f581f4de8a0dc184c';
+```
+
+```sql+sqlite
 select
   b.id,
   b.name,

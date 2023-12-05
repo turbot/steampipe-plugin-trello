@@ -16,7 +16,18 @@ The `trello_member` table provides insights into the members within Trello. As a
 ### Basic info
 Explore which Trello members are registered in your system, including their usernames and contact details. This can help manage user access and maintain up-to-date records.
 
-```sql
+```sql+postgres
+select
+  id,
+  username,
+  full_name,
+  email,
+  initials
+from
+  trello_member;
+```
+
+```sql+sqlite
 select
   id,
   username,
@@ -30,7 +41,20 @@ from
 ### List members registered under a given email address
 Determine the areas in which members are registered under a specific email address. This can be particularly useful in identifying duplicate accounts or tracking user activity across different platforms.
 
-```sql
+```sql+postgres
+select
+  id,
+  username,
+  full_name,
+  email,
+  initials
+from
+  trello_member
+where
+  email = 'abc@gmal.com';
+```
+
+```sql+sqlite
 select
   id,
   username,
@@ -46,7 +70,7 @@ where
 ### List the boards that each member has access to
 Explore which Trello boards each member has access to, providing a comprehensive view of individual access rights across different projects. This can help in analyzing the distribution of work and ensuring appropriate access control.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -60,10 +84,24 @@ where
   b.id = idb;
 ```
 
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  b.id as board_id,
+  b.name as board_name
+from
+  trello_member m,
+  json_each(m.id_boards) as idb,
+  trello_board b
+where
+  b.id = idb.value;
+```
+
 ### List the organizations that each member have been assigned to
 Explore which organizations each member is affiliated with, to gain insights into team structures and collaborations. This can be useful in identifying potential overlaps or gaps in team assignments.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -75,4 +113,18 @@ from
   trello_organization o
 where
   o.id = ido;
+```
+
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  o.id as organization_id,
+  o.name as organization_name
+from
+  trello_member m,
+  json_each(m.id_organizations) as ido,
+  trello_organization o
+where
+  o.id = ido.value;
 ```

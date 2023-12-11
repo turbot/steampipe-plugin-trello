@@ -8,6 +8,7 @@ short_name: "trello"
 description: "Steampipe plugin to query boards, cards, lists, and more from Trello."
 og_description: "Query Trello with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/trello-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Trello + Steampipe

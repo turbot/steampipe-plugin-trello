@@ -15,7 +15,7 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 [Trello](https://trello.com) is a web-based, kanban-style, list-making application.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
 List details of the boards associated with your Trello account:
 

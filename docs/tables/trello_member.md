@@ -1,12 +1,33 @@
-# Table: trello_member
+---
+title: "Steampipe Table: trello_member - Query Trello Members using SQL"
+description: "Allows users to query Trello Members, providing insights into member details, including their ID, username, full name, and avatar hash."
+---
 
-A member is an individual user who has access to a Trello board. Members can be added to boards to collaborate on projects, tasks, or any other work being managed within Trello.
+# Table: trello_member - Query Trello Members using SQL
+
+Trello is a web-based, Kanban-style, list-making application which is a subsidiary of Atlassian. Members in Trello are users who have access to and can perform certain actions within a board. They can be part of one or more boards and can have different permissions and roles depending on the board they are part of.
+
+## Table Usage Guide
+
+The `trello_member` table provides insights into the members within Trello. As a project manager or team leader, you can explore member-specific details through this table, including their ID, username, full name, and avatar hash. Utilize it to uncover information about members, such as their roles in different boards, their activity, and their contribution to various tasks.
 
 ## Examples
 
 ### Basic info
+Explore which Trello members are registered in your system, including their usernames and contact details. This can help manage user access and maintain up-to-date records.
 
-```sql
+```sql+postgres
+select
+  id,
+  username,
+  full_name,
+  email,
+  initials
+from
+  trello_member;
+```
+
+```sql+sqlite
 select
   id,
   username,
@@ -18,8 +39,22 @@ from
 ```
 
 ### List members registered under a given email address
+Determine the areas in which members are registered under a specific email address. This can be particularly useful in identifying duplicate accounts or tracking user activity across different platforms.
 
-```sql
+```sql+postgres
+select
+  id,
+  username,
+  full_name,
+  email,
+  initials
+from
+  trello_member
+where
+  email = 'abc@gmal.com';
+```
+
+```sql+sqlite
 select
   id,
   username,
@@ -33,8 +68,9 @@ where
 ```
 
 ### List the boards that each member has access to
+Explore which Trello boards each member has access to, providing a comprehensive view of individual access rights across different projects. This can help in analyzing the distribution of work and ensuring appropriate access control.
 
-```sql
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -48,9 +84,24 @@ where
   b.id = idb;
 ```
 
-### List the organizations that each member have been assigned to
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  b.id as board_id,
+  b.name as board_name
+from
+  trello_member m,
+  json_each(m.id_boards) as idb,
+  trello_board b
+where
+  b.id = idb.value;
+```
 
-```sql
+### List the organizations that each member have been assigned to
+Explore which organizations each member is affiliated with, to gain insights into team structures and collaborations. This can be useful in identifying potential overlaps or gaps in team assignments.
+
+```sql+postgres
 select
   m.id as member_id,
   username,
@@ -62,4 +113,18 @@ from
   trello_organization o
 where
   o.id = ido;
+```
+
+```sql+sqlite
+select
+  m.id as member_id,
+  username,
+  o.id as organization_id,
+  o.name as organization_name
+from
+  trello_member m,
+  json_each(m.id_organizations) as ido,
+  trello_organization o
+where
+  o.id = ido.value;
 ```

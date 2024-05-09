@@ -15,6 +15,15 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		Name:               pluginName,
 		DefaultTransform:   transform.FromCamel().Transform(transform.NullIfZeroValue),
 		DefaultRetryConfig: &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError([]string{"429"})},
+		// Member ID would be same per connection.
+		// API key and API Token is specific to a member.
+		// A member can have multiple organizations, workspaces, boards, etc...
+		ConnectionKeyColumns: []plugin.ConnectionKeyColumn{
+			{
+				Name:    "member_id",
+				Hydrate: getMemberId,
+			},
+		},
 		DefaultGetConfig: &plugin.GetConfig{
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 		},

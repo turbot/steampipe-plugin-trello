@@ -25,7 +25,7 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("id"),
 			Hydrate:    getBoard,
 		},
-		Columns: getBoardColumns(),
+		Columns: commonColumns(getBoardColumns()),
 	}
 }
 

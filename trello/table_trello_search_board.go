@@ -21,7 +21,7 @@ func tableTrelloSearchBoard(_ context.Context) *plugin.Table {
 			ParentHydrate:     listMyOrganizations,
 			Hydrate:           searchBoards,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier for the board.",
@@ -115,7 +115,7 @@ func tableTrelloSearchBoard(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 

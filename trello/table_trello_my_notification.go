@@ -18,7 +18,7 @@ func tableTrelloMyNotification(_ context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listMyNotifications,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier for notification.",
@@ -70,7 +70,7 @@ func tableTrelloMyNotification(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 

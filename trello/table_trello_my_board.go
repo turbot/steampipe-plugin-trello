@@ -18,7 +18,7 @@ func tableTrelloMyBoard(_ context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listMyBoards,
 		},
-		Columns: getBoardColumns(),
+		Columns: commonColumns(getBoardColumns()),
 	}
 }
 

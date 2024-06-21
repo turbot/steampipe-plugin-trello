@@ -25,7 +25,7 @@ func tableTrelloToken(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("id"),
 			Hydrate:    getToken,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier for the token.",
@@ -68,7 +68,7 @@ func tableTrelloToken(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Identifier"),
 			},
-		},
+		}),
 	}
 }
 

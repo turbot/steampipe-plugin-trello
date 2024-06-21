@@ -25,7 +25,7 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.AnyColumn([]string{"id", "username"}),
 			Hydrate:    getMember,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier of the member.",
@@ -84,7 +84,7 @@ func tableTrelloMember(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("FullName"),
 			},
-		},
+		}),
 	}
 }
 

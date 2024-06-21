@@ -26,7 +26,7 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 			ShouldIgnoreError: isNotFoundError([]string{"400: invalid id"}),
 			Hydrate:           getWebhook,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier for the webhook.",
@@ -70,7 +70,7 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ID"),
 			},
-		},
+		}),
 	}
 }
 

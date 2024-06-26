@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-trello
 go 1.21
 
 require (
-	github.com/adlio/trello v1.10.0
+	github.com/adlio/trello v1.12.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.8.0
 )
 

@@ -5,7 +5,7 @@ go 1.21.0
 toolchain go1.21.1
 
 require (
-	github.com/adlio/trello v1.10.0
+	github.com/adlio/trello v1.12.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.1
 )
 

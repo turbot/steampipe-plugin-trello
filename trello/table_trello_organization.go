@@ -17,7 +17,7 @@ func tableTrelloOrganization(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.AnyColumn([]string{"id"}),
 			Hydrate:    getOrganization,
 		},
-		Columns: getOrganizationColumns(),
+		Columns: commonColumns(getOrganizationColumns()),
 	}
 }
 

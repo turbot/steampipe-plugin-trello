@@ -19,7 +19,7 @@ func tableTrelloMyOrganization(_ context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listMyOrganizations,
 		},
-		Columns: getOrganizationColumns(),
+		Columns: commonColumns(getOrganizationColumns()),
 	}
 }
 

@@ -21,7 +21,7 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 			ShouldIgnoreError: isNotFoundError([]string{"404"}),
 			Hydrate:           searchCards,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier for the card.",
@@ -215,7 +215,7 @@ func tableTrelloSearchCard(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 

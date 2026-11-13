@@ -5,9 +5,9 @@ import (
 	"path"
 
 	"github.com/adlio/trello"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -17,14 +17,14 @@ func tableTrelloWebhook(_ context.Context) *plugin.Table {
 		Name:        "trello_webhook",
 		Description: "Get details of the webhooks.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id_token"}),
-			ShouldIgnoreError: isNotFoundError([]string{"400: invalid token"}),
-			Hydrate:           listWebhooks,
+			KeyColumns:   plugin.AnyColumn([]string{"id_token"}),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"400: invalid token"})},
+			Hydrate:      listWebhooks,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns:        plugin.SingleColumn("id"),
-			ShouldIgnoreError: isNotFoundError([]string{"400: invalid id"}),
-			Hydrate:           getWebhook,
+			KeyColumns:   plugin.SingleColumn("id"),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"400: invalid id"})},
+			Hydrate:      getWebhook,
 		},
 		Columns: commonColumns([]*plugin.Column{
 			{

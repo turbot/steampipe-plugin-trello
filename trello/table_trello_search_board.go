@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/adlio/trello"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -16,10 +16,10 @@ func tableTrelloSearchBoard(_ context.Context) *plugin.Table {
 		Name:        "trello_search_board",
 		Description: "Find boards you have access to that match search keywords.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.SingleColumn("query"),
-			ShouldIgnoreError: isNotFoundError([]string{"404"}),
-			ParentHydrate:     listMyOrganizations,
-			Hydrate:           searchBoards,
+			KeyColumns:    plugin.SingleColumn("query"),
+			IgnoreConfig:  &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"404"})},
+			ParentHydrate: listMyOrganizations,
+			Hydrate:       searchBoards,
 		},
 		Columns: commonColumns([]*plugin.Column{
 			{

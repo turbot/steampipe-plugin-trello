@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/adlio/trello"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 //// TABLE DEFINITION

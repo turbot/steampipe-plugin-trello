@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/adlio/trello"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 //// TABLE DEFINITION
@@ -16,10 +16,10 @@ func tableTrelloBoard(_ context.Context) *plugin.Table {
 		Name:        "trello_board",
 		Description: "Get details of all the boards in your organization.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.OptionalColumns([]string{"id_organization"}),
-			ShouldIgnoreError: isNotFoundError([]string{"404"}),
-			ParentHydrate:     listMyOrganizations,
-			Hydrate:           listBoards,
+			KeyColumns:    plugin.OptionalColumns([]string{"id_organization"}),
+			IgnoreConfig:  &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"404"})},
+			ParentHydrate: listMyOrganizations,
+			Hydrate:       listBoards,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),

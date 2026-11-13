@@ -5,9 +5,9 @@ import (
 	"path"
 
 	"github.com/adlio/trello"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -17,9 +17,9 @@ func tableTrelloCard(_ context.Context) *plugin.Table {
 		Name:        "trello_card",
 		Description: "Get details of all cards in a list.",
 		List: &plugin.ListConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id_list"}),
-			ShouldIgnoreError: isNotFoundError([]string{"404"}),
-			Hydrate:           listCards,
+			KeyColumns:   plugin.AnyColumn([]string{"id_list"}),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"404"})},
+			Hydrate:      listCards,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),

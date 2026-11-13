@@ -4,11 +4,11 @@ import (
 	"context"
 	"strings"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
-func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
-	return func(err error) bool {
+func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicateWithContext {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData, err error) bool {
 		errMsg := err.Error()
 		for _, msg := range notFoundErrors {
 			if strings.Contains(errMsg, msg) {

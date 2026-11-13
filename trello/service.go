@@ -6,14 +6,14 @@ import (
 	"os"
 
 	"github.com/adlio/trello"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 func connectTrello(ctx context.Context, d *plugin.QueryData) (*trello.Client, error) {
 
 	// Load connection from cache, which preserves throttling protection etc
 	cacheKey := "trello"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
+	if cachedData, ok := d.ConnectionCache.Get(ctx, cacheKey); ok {
 		return cachedData.(*trello.Client), nil
 	}
 
@@ -41,7 +41,9 @@ func connectTrello(ctx context.Context, d *plugin.QueryData) (*trello.Client, er
 	client := trello.NewClient(apiKey, token)
 
 	if client != nil {
-		d.ConnectionManager.Cache.Set(cacheKey, client)
+		if err := d.ConnectionCache.Set(ctx, cacheKey, client); err != nil {
+			plugin.Logger(ctx).Warn("connectTrello", "cache_set_error", err)
+		}
 	}
 
 	return client, nil
